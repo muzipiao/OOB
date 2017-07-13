@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="1Qu-4F-lhn">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--OpenCV-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kUw-QU-YcJ" userLabel="CIFilterBtn">
+                                <rect key="frame" x="102" y="159" width="171" height="30"/>
+                                <state key="normal" title="系统自带CIFilter处理视频"/>
+                                <connections>
+                                    <action selector="cifilterBtnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="om2-Yb-78U"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z8C-Lb-LuR" userLabel="templateBtn">
+                                <rect key="frame" x="89" y="217" width="196" height="30"/>
+                                <state key="normal" title="OpenCV模板匹配法识别图像"/>
+                                <connections>
+                                    <action selector="templateBtnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mjV-sD-tj7"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xBN-NJ-b7x" userLabel="cascadeBtn">
+                                <rect key="frame" x="89" y="281" width="196" height="30"/>
+                                <state key="normal" title="OpenCV训练分类器识别图像"/>
+                                <connections>
+                                    <action selector="cascadeBtnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Bwq-So-ZZf"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vQn-eP-2U5" userLabel="cannyBtn">
+                                <rect key="frame" x="105" y="340" width="165" height="30"/>
+                                <state key="normal" title="OpenCV图像转化为轮廓"/>
+                                <connections>
+                                    <action selector="cannyBtnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="69V-QK-3Yn"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="xBN-NJ-b7x" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="9lr-GV-pZu"/>
+                            <constraint firstItem="Z8C-Lb-LuR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BYy-KB-W4S"/>
+                            <constraint firstItem="kUw-QU-YcJ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="95" id="HCv-bJ-osc"/>
+                            <constraint firstItem="vQn-eP-2U5" firstAttribute="top" secondItem="xBN-NJ-b7x" secondAttribute="bottom" constant="29" id="IbT-67-umo"/>
+                            <constraint firstItem="Z8C-Lb-LuR" firstAttribute="top" secondItem="kUw-QU-YcJ" secondAttribute="bottom" constant="28" id="ZuF-pt-YHs"/>
+                            <constraint firstItem="vQn-eP-2U5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ia1-MU-oWW"/>
+                            <constraint firstItem="kUw-QU-YcJ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="jfu-Ex-hUq"/>
+                            <constraint firstItem="xBN-NJ-b7x" firstAttribute="top" secondItem="Z8C-Lb-LuR" secondAttribute="bottom" constant="34" id="zec-cI-EiE"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="OpenCV" id="qVG-ch-ewt"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="985" y="789"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="PE0-ST-Lrh">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="1Qu-4F-lhn" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="E1W-Wg-mQK">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="Vgw-7o-TG2"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ad0-Yb-a7i" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="125.59999999999999" y="789.35532233883066"/>
+        </scene>
+    </scenes>
+</document>
