@@ -19,7 +19,6 @@
 		5F482F491F050638006C6CCB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F482F481F050638006C6CCB /* CoreGraphics.framework */; };
 		5F482F4B1F050642006C6CCB /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F482F4A1F050642006C6CCB /* QuartzCore.framework */; };
 		5F482F4D1F05064D006C6CCB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F482F4C1F05064D006C6CCB /* Accelerate.framework */; };
-		5F482F501F050671006C6CCB /* OpencvVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F482F4F1F050671006C6CCB /* OpencvVC.mm */; };
 		5F54967D1F0CDA0200D74E83 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F54967C1F0CDA0200D74E83 /* Assets.xcassets */; };
 		5F63559E1F145C7300C59A92 /* lbpcascade_frontalface.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5F63559D1F145C7300C59A92 /* lbpcascade_frontalface.xml */; };
 		5F6355A11F14681000C59A92 /* OpenCVTemplateVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F6355A01F14681000C59A92 /* OpenCVTemplateVC.mm */; };
@@ -27,8 +26,6 @@
 		5F6355B11F1477B100C59A92 /* CIFilterVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6355B01F1477B100C59A92 /* CIFilterVC.m */; };
 		5F6355B41F14A45800C59A92 /* OpenCVManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F6355B31F14A45800C59A92 /* OpenCVManager.mm */; };
 		5F6355B71F14A7DC00C59A92 /* HaarCascadeVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F6355B61F14A7DC00C59A92 /* HaarCascadeVC.mm */; };
-		5F678B891F0B3BB400C07877 /* FrameVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F678B881F0B3BB400C07877 /* FrameVC.m */; };
-		5F678B8C1F0B886700C07877 /* OpencvCannyVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F678B8B1F0B886700C07877 /* OpencvCannyVC.mm */; };
 		5F7E46061F0A6D250095FDC7 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7E46051F0A6D250095FDC7 /* CoreMedia.framework */; };
 		5FACA5591F134E8500216699 /* haarcascade_eye_tree_eyeglasses.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5FACA5581F134E8500216699 /* haarcascade_eye_tree_eyeglasses.xml */; };
 /* End PBXBuildFile section */
@@ -51,8 +48,6 @@
 		5F482F481F050638006C6CCB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		5F482F4A1F050642006C6CCB /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		5F482F4C1F05064D006C6CCB /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
-		5F482F4E1F050671006C6CCB /* OpencvVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpencvVC.h; sourceTree = "<group>"; };
-		5F482F4F1F050671006C6CCB /* OpencvVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpencvVC.mm; sourceTree = "<group>"; };
 		5F54967C1F0CDA0200D74E83 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F63559D1F145C7300C59A92 /* lbpcascade_frontalface.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = lbpcascade_frontalface.xml; sourceTree = "<group>"; };
 		5F63559F1F14681000C59A92 /* OpenCVTemplateVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenCVTemplateVC.h; sourceTree = "<group>"; };
@@ -66,10 +61,6 @@
 		5F6355B31F14A45800C59A92 /* OpenCVManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVManager.mm; sourceTree = "<group>"; };
 		5F6355B51F14A7DC00C59A92 /* HaarCascadeVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HaarCascadeVC.h; sourceTree = "<group>"; };
 		5F6355B61F14A7DC00C59A92 /* HaarCascadeVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HaarCascadeVC.mm; sourceTree = "<group>"; };
-		5F678B871F0B3BB400C07877 /* FrameVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameVC.h; sourceTree = "<group>"; };
-		5F678B881F0B3BB400C07877 /* FrameVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FrameVC.m; sourceTree = "<group>"; };
-		5F678B8A1F0B886700C07877 /* OpencvCannyVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpencvCannyVC.h; sourceTree = "<group>"; };
-		5F678B8B1F0B886700C07877 /* OpencvCannyVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpencvCannyVC.mm; sourceTree = "<group>"; };
 		5F7E46051F0A6D250095FDC7 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		5FACA5581F134E8500216699 /* haarcascade_eye_tree_eyeglasses.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = haarcascade_eye_tree_eyeglasses.xml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -131,12 +122,6 @@
 				5F6355B61F14A7DC00C59A92 /* HaarCascadeVC.mm */,
 				5F11E1F31F15A9B100B39443 /* OpenCVToPsImgVC.h */,
 				5F11E1F41F15A9B100B39443 /* OpenCVToPsImgVC.mm */,
-				5F678B8A1F0B886700C07877 /* OpencvCannyVC.h */,
-				5F678B8B1F0B886700C07877 /* OpencvCannyVC.mm */,
-				5F678B871F0B3BB400C07877 /* FrameVC.h */,
-				5F678B881F0B3BB400C07877 /* FrameVC.m */,
-				5F482F4E1F050671006C6CCB /* OpencvVC.h */,
-				5F482F4F1F050671006C6CCB /* OpencvVC.mm */,
 				5F482F301F05051C006C6CCB /* Main.storyboard */,
 				5F482F351F05051C006C6CCB /* LaunchScreen.storyboard */,
 				5F482F381F05051C006C6CCB /* Info.plist */,
@@ -258,15 +243,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F678B8C1F0B886700C07877 /* OpencvCannyVC.mm in Sources */,
-				5F678B891F0B3BB400C07877 /* FrameVC.m in Sources */,
 				5F6355B41F14A45800C59A92 /* OpenCVManager.mm in Sources */,
 				5F11E1F51F15A9B100B39443 /* OpenCVToPsImgVC.mm in Sources */,
 				5F6355B71F14A7DC00C59A92 /* HaarCascadeVC.mm in Sources */,
 				5F6355AE1F14771C00C59A92 /* OpenCVBaseVC.mm in Sources */,
 				5F6355B11F1477B100C59A92 /* CIFilterVC.m in Sources */,
 				5F482F2F1F05051C006C6CCB /* ViewController.m in Sources */,
-				5F482F501F050671006C6CCB /* OpencvVC.mm in Sources */,
 				5F6355A11F14681000C59A92 /* OpenCVTemplateVC.mm in Sources */,
 				5F482F2C1F05051C006C6CCB /* AppDelegate.m in Sources */,
 				5F482F291F05051C006C6CCB /* main.m in Sources */,
