@@ -1,5 +1,9 @@
 #### **注意：OpenCV框架(opencv2.framework)超过100M，无法提交，请至[OpenCV官网](http://opencv.org)自行下载，拖入项目`ThirdFramework`文件下即可**
 
+* [iOS图像识别博客](http://www.jianshu.com/p/e9791ddad36f)
+
+* [iOS集成OpenCV博客](http://www.jianshu.com/p/0707e9fc466c)
+
 ## iOS通过摄像头动态识别图像
 
 ### 前言：
