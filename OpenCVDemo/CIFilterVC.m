@@ -74,7 +74,7 @@
     
     dispatch_sync(dispatch_get_main_queue(), ^{
         if (cgImage) {
-            self.targetImgLayer.contents = (__bridge id _Nullable)cgImage;
+            self.targetImgLayer.contents = CFBridgingRelease(cgImage);
         }
     });
 
