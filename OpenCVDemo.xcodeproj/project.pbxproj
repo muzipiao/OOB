@@ -27,6 +27,7 @@
 		5F6355B41F14A45800C59A92 /* OpenCVManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F6355B31F14A45800C59A92 /* OpenCVManager.mm */; };
 		5F6355B71F14A7DC00C59A92 /* HaarCascadeVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F6355B61F14A7DC00C59A92 /* HaarCascadeVC.mm */; };
 		5F7E46061F0A6D250095FDC7 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7E46051F0A6D250095FDC7 /* CoreMedia.framework */; };
+		5FA152D5211D9CC800FB708A /* RecoToStringVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5FA152D4211D9CC700FB708A /* RecoToStringVC.mm */; };
 		5FACA5591F134E8500216699 /* haarcascade_eye_tree_eyeglasses.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5FACA5581F134E8500216699 /* haarcascade_eye_tree_eyeglasses.xml */; };
 /* End PBXBuildFile section */
 
@@ -52,7 +53,6 @@
 		5F63559D1F145C7300C59A92 /* lbpcascade_frontalface.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = lbpcascade_frontalface.xml; sourceTree = "<group>"; };
 		5F63559F1F14681000C59A92 /* OpenCVTemplateVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenCVTemplateVC.h; sourceTree = "<group>"; };
 		5F6355A01F14681000C59A92 /* OpenCVTemplateVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVTemplateVC.mm; sourceTree = "<group>"; };
-		5F6355AA1F146C0600C59A92 /* OpenCVDemoConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenCVDemoConfig.h; sourceTree = "<group>"; };
 		5F6355AC1F14771C00C59A92 /* OpenCVBaseVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenCVBaseVC.h; sourceTree = "<group>"; };
 		5F6355AD1F14771C00C59A92 /* OpenCVBaseVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVBaseVC.mm; sourceTree = "<group>"; };
 		5F6355AF1F1477B100C59A92 /* CIFilterVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIFilterVC.h; sourceTree = "<group>"; };
@@ -62,6 +62,9 @@
 		5F6355B51F14A7DC00C59A92 /* HaarCascadeVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HaarCascadeVC.h; sourceTree = "<group>"; };
 		5F6355B61F14A7DC00C59A92 /* HaarCascadeVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HaarCascadeVC.mm; sourceTree = "<group>"; };
 		5F7E46051F0A6D250095FDC7 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		5FA152D2211D9CB300FB708A /* OpenCVConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVConfig.h; sourceTree = "<group>"; };
+		5FA152D3211D9CC700FB708A /* RecoToStringVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecoToStringVC.h; sourceTree = "<group>"; };
+		5FA152D4211D9CC700FB708A /* RecoToStringVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RecoToStringVC.mm; sourceTree = "<group>"; };
 		5FACA5581F134E8500216699 /* haarcascade_eye_tree_eyeglasses.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = haarcascade_eye_tree_eyeglasses.xml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -105,7 +108,7 @@
 			children = (
 				5FACA5571F134E7700216699 /* OtherFiles */,
 				5F482F3E1F0505BA006C6CCB /* ThirdFramework */,
-				5F6355AA1F146C0600C59A92 /* OpenCVDemoConfig.h */,
+				5FA152D2211D9CB300FB708A /* OpenCVConfig.h */,
 				5F482F2A1F05051C006C6CCB /* AppDelegate.h */,
 				5F482F2B1F05051C006C6CCB /* AppDelegate.m */,
 				5F6355AC1F14771C00C59A92 /* OpenCVBaseVC.h */,
@@ -122,6 +125,8 @@
 				5F6355B61F14A7DC00C59A92 /* HaarCascadeVC.mm */,
 				5F11E1F31F15A9B100B39443 /* OpenCVToPsImgVC.h */,
 				5F11E1F41F15A9B100B39443 /* OpenCVToPsImgVC.mm */,
+				5FA152D3211D9CC700FB708A /* RecoToStringVC.h */,
+				5FA152D4211D9CC700FB708A /* RecoToStringVC.mm */,
 				5F482F301F05051C006C6CCB /* Main.storyboard */,
 				5F482F351F05051C006C6CCB /* LaunchScreen.storyboard */,
 				5F482F381F05051C006C6CCB /* Info.plist */,
@@ -195,13 +200,13 @@
 		5F482F1C1F05051C006C6CCB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = PacteraLF;
 				TargetAttributes = {
 					5F482F231F05051C006C6CCB = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 4BX77JHQHH;
-						ProvisioningStyle = Automatic;
+						DevelopmentTeam = 5876MU3PLA;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -252,6 +257,7 @@
 				5F6355A11F14681000C59A92 /* OpenCVTemplateVC.mm in Sources */,
 				5F482F2C1F05051C006C6CCB /* AppDelegate.m in Sources */,
 				5F482F291F05051C006C6CCB /* main.m in Sources */,
+				5FA152D5211D9CC800FB708A /* RecoToStringVC.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,15 +293,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -335,15 +349,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -373,7 +395,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 4BX77JHQHH;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 5876MU3PLA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenCVDemo/ThirdFramework",
@@ -381,9 +404,10 @@
 				INFOPLIST_FILE = OpenCVDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.lf.opencvdemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cebbank.xyk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "327c1f13-2405-4eb2-8c56-ff4cbd747574";
+				PROVISIONING_PROFILE_SPECIFIER = cebdevolopment;
 			};
 			name = Debug;
 		};
@@ -393,7 +417,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 4BX77JHQHH;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 5876MU3PLA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenCVDemo/ThirdFramework",
@@ -401,9 +426,10 @@
 				INFOPLIST_FILE = OpenCVDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.lf.opencvdemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cebbank.xyk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "327c1f13-2405-4eb2-8c56-ff4cbd747574";
+				PROVISIONING_PROFILE_SPECIFIER = cebdevolopment;
 			};
 			name = Release;
 		};

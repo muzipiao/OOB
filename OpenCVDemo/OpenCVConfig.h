@@ -1,11 +1,13 @@
 //
-//  OpenCVDemoConfig.h
+//  OpenCVConfig.h
 //  OpenCVDemo
 //
-//  Created by PacteraLF on 2017/7/11.
-//  Copyright © 2017年 PacteraLF. All rights reserved.
+//  Created by PacteraLF on 2018/8/10.
+//  Copyright © 2018年 PacteraLF. All rights reserved.
 //
 
+#ifndef OpenCVConfig_h
+#define OpenCVConfig_h
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -20,3 +22,6 @@
 #pragma clang pop
 
 #import <UIKit/UIKit.h>
+
+
+#endif /* OpenCVConfig_h */

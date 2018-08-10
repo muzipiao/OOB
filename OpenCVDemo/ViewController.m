@@ -39,6 +39,9 @@
 - (IBAction)cannyBtnClick:(UIButton *)sender {
     [self pushVC:@"OpenCVToPsImgVC" withBtn:sender];
 }
+- (IBAction)recoToStringBtnClick:(UIButton *)sender {
+    [self pushVC:@"RecoToStringVC" withBtn:sender];
+}
 
 -(void)pushVC:(NSString *)vcName withBtn:(UIButton *)sender{
     id viewController = [[NSClassFromString(vcName) alloc] init];

@@ -6,7 +6,7 @@
 //  Copyright © 2017年 PacteraLF. All rights reserved.
 //
 
-#import "OpenCVDemoConfig.h"
+#import "OpenCVConfig.h"
 #import <AVFoundation/AVFoundation.h>
 
 @interface OpenCVManager : NSObject
