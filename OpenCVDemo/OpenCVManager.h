@@ -27,4 +27,7 @@
 //将CMSampleBufferRef转为cv::Mat
 + (cv::Mat)bufferToMat:(CMSampleBufferRef) sampleBuffer;
 
+// 局部自适应快速积分二值化方法
++(cv::Mat)convToBinary:(cv::Mat) src;
+
 @end

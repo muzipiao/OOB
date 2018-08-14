@@ -26,8 +26,9 @@
 		5F6355B11F1477B100C59A92 /* CIFilterVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6355B01F1477B100C59A92 /* CIFilterVC.m */; };
 		5F6355B41F14A45800C59A92 /* OpenCVManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F6355B31F14A45800C59A92 /* OpenCVManager.mm */; };
 		5F6355B71F14A7DC00C59A92 /* HaarCascadeVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F6355B61F14A7DC00C59A92 /* HaarCascadeVC.mm */; };
+		5F7D333D21213042002818C2 /* RecoToStringVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F7D333C21213042002818C2 /* RecoToStringVC.mm */; };
+		5F7D334021213049002818C2 /* TransVideoToStringVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F7D333E21213049002818C2 /* TransVideoToStringVC.mm */; };
 		5F7E46061F0A6D250095FDC7 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7E46051F0A6D250095FDC7 /* CoreMedia.framework */; };
-		5FA152D5211D9CC800FB708A /* RecoToStringVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5FA152D4211D9CC700FB708A /* RecoToStringVC.mm */; };
 		5FACA5591F134E8500216699 /* haarcascade_eye_tree_eyeglasses.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5FACA5581F134E8500216699 /* haarcascade_eye_tree_eyeglasses.xml */; };
 /* End PBXBuildFile section */
 
@@ -61,10 +62,12 @@
 		5F6355B31F14A45800C59A92 /* OpenCVManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVManager.mm; sourceTree = "<group>"; };
 		5F6355B51F14A7DC00C59A92 /* HaarCascadeVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HaarCascadeVC.h; sourceTree = "<group>"; };
 		5F6355B61F14A7DC00C59A92 /* HaarCascadeVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HaarCascadeVC.mm; sourceTree = "<group>"; };
+		5F7D333B21213042002818C2 /* RecoToStringVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecoToStringVC.h; sourceTree = "<group>"; };
+		5F7D333C21213042002818C2 /* RecoToStringVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RecoToStringVC.mm; sourceTree = "<group>"; };
+		5F7D333E21213049002818C2 /* TransVideoToStringVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TransVideoToStringVC.mm; sourceTree = "<group>"; };
+		5F7D333F21213049002818C2 /* TransVideoToStringVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransVideoToStringVC.h; sourceTree = "<group>"; };
 		5F7E46051F0A6D250095FDC7 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		5FA152D2211D9CB300FB708A /* OpenCVConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVConfig.h; sourceTree = "<group>"; };
-		5FA152D3211D9CC700FB708A /* RecoToStringVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecoToStringVC.h; sourceTree = "<group>"; };
-		5FA152D4211D9CC700FB708A /* RecoToStringVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RecoToStringVC.mm; sourceTree = "<group>"; };
 		5FACA5581F134E8500216699 /* haarcascade_eye_tree_eyeglasses.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = haarcascade_eye_tree_eyeglasses.xml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -125,8 +128,10 @@
 				5F6355B61F14A7DC00C59A92 /* HaarCascadeVC.mm */,
 				5F11E1F31F15A9B100B39443 /* OpenCVToPsImgVC.h */,
 				5F11E1F41F15A9B100B39443 /* OpenCVToPsImgVC.mm */,
-				5FA152D3211D9CC700FB708A /* RecoToStringVC.h */,
-				5FA152D4211D9CC700FB708A /* RecoToStringVC.mm */,
+				5F7D333B21213042002818C2 /* RecoToStringVC.h */,
+				5F7D333C21213042002818C2 /* RecoToStringVC.mm */,
+				5F7D333F21213049002818C2 /* TransVideoToStringVC.h */,
+				5F7D333E21213049002818C2 /* TransVideoToStringVC.mm */,
 				5F482F301F05051C006C6CCB /* Main.storyboard */,
 				5F482F351F05051C006C6CCB /* LaunchScreen.storyboard */,
 				5F482F381F05051C006C6CCB /* Info.plist */,
@@ -249,6 +254,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F6355B41F14A45800C59A92 /* OpenCVManager.mm in Sources */,
+				5F7D334021213049002818C2 /* TransVideoToStringVC.mm in Sources */,
 				5F11E1F51F15A9B100B39443 /* OpenCVToPsImgVC.mm in Sources */,
 				5F6355B71F14A7DC00C59A92 /* HaarCascadeVC.mm in Sources */,
 				5F6355AE1F14771C00C59A92 /* OpenCVBaseVC.mm in Sources */,
@@ -257,7 +263,7 @@
 				5F6355A11F14681000C59A92 /* OpenCVTemplateVC.mm in Sources */,
 				5F482F2C1F05051C006C6CCB /* AppDelegate.m in Sources */,
 				5F482F291F05051C006C6CCB /* main.m in Sources */,
-				5FA152D5211D9CC800FB708A /* RecoToStringVC.mm in Sources */,
+				5F7D333D21213042002818C2 /* RecoToStringVC.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,6 +414,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "327c1f13-2405-4eb2-8c56-ff4cbd747574";
 				PROVISIONING_PROFILE_SPECIFIER = cebdevolopment;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -430,6 +437,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "327c1f13-2405-4eb2-8c56-ff4cbd747574";
 				PROVISIONING_PROFILE_SPECIFIER = cebdevolopment;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

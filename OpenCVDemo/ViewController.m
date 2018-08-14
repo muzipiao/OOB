@@ -42,6 +42,9 @@
 - (IBAction)recoToStringBtnClick:(UIButton *)sender {
     [self pushVC:@"RecoToStringVC" withBtn:sender];
 }
+- (IBAction)videoToStringBtnClick:(UIButton *)sender {
+    [self pushVC:@"TransVideoToStringVC" withBtn:sender];
+}
 
 -(void)pushVC:(NSString *)vcName withBtn:(UIButton *)sender{
     id viewController = [[NSClassFromString(vcName) alloc] init];
