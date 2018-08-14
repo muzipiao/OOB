@@ -56,6 +56,11 @@
         return;
     }
     
+    // OpenCV中Mat矩阵颜色是按照BGR来储存的，转成UIImage之后，是按照RGB来的。
+    // 所以在转换为UIImage之前，需要将Mat中的BGR转换为RGB；
+    cv::Mat orginImgMat;
+    cv::cvtColor(imgMat, orginImgMat, CV_BGR2RGB);
+    
     //转换为灰度图像,加快处理速度
     cv::Mat grayMat = [self coverToGray:imgMat];
     
@@ -79,7 +84,7 @@
     //在异步线程中，将任务同步添加至主线程，不会造成死锁
     dispatch_sync(dispatch_get_main_queue(), ^{
         //原图像
-        self.imgViewArr[0].image = MatToUIImage(imgMat);
+        self.imgViewArr[0].image = MatToUIImage(orginImgMat);
         //直方图均衡化
         self.imgViewArr[1].image = MatToUIImage(grayMat);
         //转换为灰度图像,加快处理速度
