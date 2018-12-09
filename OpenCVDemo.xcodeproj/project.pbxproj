@@ -210,8 +210,8 @@
 				TargetAttributes = {
 					5F482F231F05051C006C6CCB = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 5876MU3PLA;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = 4BX77JHQHH;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -401,8 +401,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 5876MU3PLA;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4BX77JHQHH;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenCVDemo/ThirdFramework",
@@ -410,10 +410,10 @@
 				INFOPLIST_FILE = OpenCVDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.cebbank.xyk;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lf.opencv;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "327c1f13-2405-4eb2-8c56-ff4cbd747574";
-				PROVISIONING_PROFILE_SPECIFIER = cebdevolopment;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -424,8 +424,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 5876MU3PLA;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4BX77JHQHH;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenCVDemo/ThirdFramework",
@@ -433,10 +433,10 @@
 				INFOPLIST_FILE = OpenCVDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.cebbank.xyk;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lf.opencv;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "327c1f13-2405-4eb2-8c56-ff4cbd747574";
-				PROVISIONING_PROFILE_SPECIFIER = cebdevolopment;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

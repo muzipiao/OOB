@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="1Qu-4F-lhn">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="1Qu-4F-lhn">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -29,36 +29,36 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z8C-Lb-LuR" userLabel="templateBtn">
-                                <rect key="frame" x="89" y="217" width="196" height="30"/>
+                                <rect key="frame" x="89.5" y="209" width="196" height="30"/>
                                 <state key="normal" title="OpenCV模板匹配法识别图像"/>
                                 <connections>
                                     <action selector="templateBtnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mjV-sD-tj7"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xBN-NJ-b7x" userLabel="cascadeBtn">
-                                <rect key="frame" x="89" y="281" width="196" height="30"/>
+                                <rect key="frame" x="89.5" y="259" width="196" height="30"/>
                                 <state key="normal" title="OpenCV训练分类器识别图像"/>
                                 <connections>
                                     <action selector="cascadeBtnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Bwq-So-ZZf"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vQn-eP-2U5" userLabel="cannyBtn">
-                                <rect key="frame" x="105" y="340" width="165" height="30"/>
+                                <rect key="frame" x="105" y="309" width="165" height="30"/>
                                 <state key="normal" title="OpenCV图像转化为轮廓"/>
                                 <connections>
                                     <action selector="cannyBtnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="69V-QK-3Yn"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RfB-Fy-Jet" userLabel="recoToStringBtn">
-                                <rect key="frame" x="126" y="390" width="123" height="30"/>
+                                <rect key="frame" x="126" y="359" width="123" height="30"/>
                                 <state key="normal" title="摄像头视频转文字"/>
                                 <connections>
                                     <action selector="recoToStringBtnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="inJ-qu-2pr"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jzR-Ro-rVW" userLabel="videoToStringBtn">
-                                <rect key="frame" x="149" y="428" width="77" height="30"/>
-                                <state key="normal" title="视频转文字"/>
+                                <rect key="frame" x="133.5" y="409" width="108" height="30"/>
+                                <state key="normal" title="视频文件转文字"/>
                                 <connections>
                                     <action selector="videoToStringBtnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3Wf-d4-JJB"/>
                                 </connections>
@@ -71,13 +71,13 @@
                             <constraint firstItem="xBN-NJ-b7x" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="9lr-GV-pZu"/>
                             <constraint firstItem="Z8C-Lb-LuR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BYy-KB-W4S"/>
                             <constraint firstItem="kUw-QU-YcJ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="95" id="HCv-bJ-osc"/>
-                            <constraint firstItem="vQn-eP-2U5" firstAttribute="top" secondItem="xBN-NJ-b7x" secondAttribute="bottom" constant="29" id="IbT-67-umo"/>
-                            <constraint firstItem="Z8C-Lb-LuR" firstAttribute="top" secondItem="kUw-QU-YcJ" secondAttribute="bottom" constant="28" id="ZuF-pt-YHs"/>
+                            <constraint firstItem="vQn-eP-2U5" firstAttribute="top" secondItem="xBN-NJ-b7x" secondAttribute="bottom" constant="20" id="IbT-67-umo"/>
+                            <constraint firstItem="Z8C-Lb-LuR" firstAttribute="top" secondItem="kUw-QU-YcJ" secondAttribute="bottom" constant="20" id="ZuF-pt-YHs"/>
                             <constraint firstItem="vQn-eP-2U5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ia1-MU-oWW"/>
                             <constraint firstItem="kUw-QU-YcJ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="jfu-Ex-hUq"/>
-                            <constraint firstItem="jzR-Ro-rVW" firstAttribute="top" secondItem="RfB-Fy-Jet" secondAttribute="bottom" constant="8" id="nnx-Gf-cjW"/>
+                            <constraint firstItem="jzR-Ro-rVW" firstAttribute="top" secondItem="RfB-Fy-Jet" secondAttribute="bottom" constant="20" id="nnx-Gf-cjW"/>
                             <constraint firstItem="jzR-Ro-rVW" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="sZ4-Z9-uyE"/>
-                            <constraint firstItem="xBN-NJ-b7x" firstAttribute="top" secondItem="Z8C-Lb-LuR" secondAttribute="bottom" constant="34" id="zec-cI-EiE"/>
+                            <constraint firstItem="xBN-NJ-b7x" firstAttribute="top" secondItem="Z8C-Lb-LuR" secondAttribute="bottom" constant="20" id="zec-cI-EiE"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="OpenCV" id="qVG-ch-ewt"/>

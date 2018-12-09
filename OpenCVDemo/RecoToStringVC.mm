@@ -27,33 +27,29 @@
 }
 
 -(void)createUI{
-    [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(hidePreview) userInfo:nil repeats:YES];
-    //设置摄像头的预览图层大小
+    // 关闭预览图层
     self.previewLayer.frame = CGRectZero;
+    
+    // 设置
     CGFloat imgW = self.view.bounds.size.width;
     CGFloat imgH = self.view.bounds.size.height - 64;
     
+    // 二值化后的图像预览
     UIImageView *tempImgView0 = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64, imgW, imgH)];
     [self.view addSubview:tempImgView0];
     self.binPreimgView = tempImgView0;
     self.binPreimgView.alpha = 0.5;
     
+    // 将图像转换为符号的预览
     UIImageView *tempImgView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64, imgW, imgH)];
     [self.view addSubview:tempImgView];
     self.imgView = tempImgView;
 }
 
--(void)hidePreview{
-//    self.binPreimgView.hidden = !self.binPreimgView.isHidden;
-    self.binPreimgView.hidden = YES;
-}
-
 #pragma mark - 获取视频帧，处理视频
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection{
-    [NSThread sleepForTimeInterval:0.1];
     // 将视频帧转换为cvmat,默认已经转换为
-    cv::Mat imgMat;
-    imgMat = [OpenCVManager bufferToMat:sampleBuffer];
+    cv::Mat imgMat = [OpenCVManager bufferToMat:sampleBuffer];
     if (imgMat.empty()) {
         return;
     }
@@ -64,7 +60,7 @@
     NSDictionary *exifMetadata = [[metadata objectForKey:(NSString *)kCGImagePropertyExifDictionary] mutableCopy];
     float brightnessValue = [[exifMetadata objectForKey:(NSString *)kCGImagePropertyExifBrightnessValue] floatValue];
     
-    NSLog(@"%f",brightnessValue);
+    NSLog(@"环境亮度：%f",brightnessValue);
     
     cv::Mat dstBinMat;
     if (brightnessValue < 1.5) {
