@@ -166,6 +166,19 @@
     int tRows = self.templateMat.rows;
     int tCols = self.templateMat.cols;
     
+    // 模板图像必须小于待比较的摄像头背景图像，大于则缩小
+    while (tRows > inputRows || tCols > inputCols) {
+        tCols = tCols * 0.8;
+        tRows = tRows * 0.8;
+        if (tRows > inputRows || tCols > inputCols) {
+            continue;
+        }
+        cv::Size reSize = cv::Size(tCols,tRows);
+        cv::Mat reSizeMat;
+        cv::resize(self.templateMat, reSizeMat, reSize);
+        self.templateMat = reSizeMat;
+    }
+    
     NSMutableArray *marr = [NSMutableArray array];
     
     for (int i = 0; i < level; i++) {
@@ -182,8 +195,8 @@
             int upRows = tRows*(1+i*0.2);
             //如果超限会崩，则做判断处理
             if (upCols>=inputCols || upRows>=inputRows) {
-                upCols = tCols;
-                upRows = tRows;
+                upCols = inputCols;
+                upRows = inputRows;
             }
             dstSize = cv::Size(upCols,upRows);
         }
@@ -222,6 +235,9 @@
     //    matchLoc = maxLoc;
     //    NSLog(@"min==%f,max==%f",minVal,maxVal);
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (maxVal < 0) {
+            maxVal = 0;
+        }
         self.similarLevelLabel.text = [NSString stringWithFormat:@"相似度：%.2f",maxVal];
     });
     
