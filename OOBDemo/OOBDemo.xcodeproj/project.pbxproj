@@ -12,6 +12,8 @@
 		9CF9C62E2230C31A00158594 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9CF9C62D2230C31A00158594 /* Assets.xcassets */; };
 		9CF9C6342230C31A00158594 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF9C6332230C31A00158594 /* main.m */; };
 		9CF9C63F22312D3D00158594 /* MainVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF9C63D22312D3D00158594 /* MainVC.m */; };
+		9CF9C648223141E800158594 /* OOBManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9CF9C643223141E800158594 /* OOBManager.mm */; };
+		9CF9C649223141E800158594 /* OOB.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF9C646223141E800158594 /* OOB.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +27,11 @@
 		9CF9C6332230C31A00158594 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9CF9C63D22312D3D00158594 /* MainVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainVC.m; sourceTree = "<group>"; };
 		9CF9C63E22312D3D00158594 /* MainVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainVC.h; sourceTree = "<group>"; };
+		9CF9C643223141E800158594 /* OOBManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OOBManager.mm; sourceTree = "<group>"; };
+		9CF9C644223141E800158594 /* OOB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOB.h; sourceTree = "<group>"; };
+		9CF9C645223141E800158594 /* OOBManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOBManager.h; sourceTree = "<group>"; };
+		9CF9C646223141E800158594 /* OOB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOB.m; sourceTree = "<group>"; };
+		9CF9C647223141E800158594 /* OOBDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOBDefine.h; sourceTree = "<group>"; };
 		E45DAA042DE42911B77F9AE9 /* Pods-OOBDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OOBDemo.release.xcconfig"; path = "Target Support Files/Pods-OOBDemo/Pods-OOBDemo.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -72,6 +79,7 @@
 			children = (
 				9CF9C6242230C31700158594 /* AppDelegate.h */,
 				9CF9C6252230C31700158594 /* AppDelegate.m */,
+				9CF9C642223141E800158594 /* OOB */,
 				9CF9C63E22312D3D00158594 /* MainVC.h */,
 				9CF9C63D22312D3D00158594 /* MainVC.m */,
 				9CF9C62D2230C31A00158594 /* Assets.xcassets */,
@@ -79,6 +87,19 @@
 				9CF9C6332230C31A00158594 /* main.m */,
 			);
 			path = OOBDemo;
+			sourceTree = "<group>";
+		};
+		9CF9C642223141E800158594 /* OOB */ = {
+			isa = PBXGroup;
+			children = (
+				9CF9C644223141E800158594 /* OOB.h */,
+				9CF9C646223141E800158594 /* OOB.m */,
+				9CF9C647223141E800158594 /* OOBDefine.h */,
+				9CF9C645223141E800158594 /* OOBManager.h */,
+				9CF9C643223141E800158594 /* OOBManager.mm */,
+			);
+			name = OOB;
+			path = ../../OOB;
 			sourceTree = "<group>";
 		};
 		F5D15E3DE65E62A6A297F950 /* Frameworks */ = {
@@ -183,8 +204,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CF9C648223141E800158594 /* OOBManager.mm in Sources */,
 				9CF9C63F22312D3D00158594 /* MainVC.m in Sources */,
 				9CF9C6342230C31A00158594 /* main.m in Sources */,
+				9CF9C649223141E800158594 /* OOB.m in Sources */,
 				9CF9C6262230C31700158594 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
