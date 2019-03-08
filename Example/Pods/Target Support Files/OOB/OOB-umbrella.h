@@ -10,6 +10,9 @@
 #endif
 #endif
 
+#import "OOB.h"
+#import "OOBDefine.h"
+#import "OOBManager.h"
 
 FOUNDATION_EXPORT double OOBVersionNumber;
 FOUNDATION_EXPORT const unsigned char OOBVersionString[];

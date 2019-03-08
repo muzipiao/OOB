@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		16E394B89220927F23406466 /* Pods_OOB_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A13ED92E8A7D58EBA7F3B439 /* Pods_OOB_Tests.framework */; };
-		3D5881B233E78A8AA4FE1D5E /* Pods_OOB_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60F82EA1D247E943394C7254 /* Pods_OOB_Example.framework */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -22,6 +20,9 @@
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
+		618C8411AB41B7265053ECF9 /* libPods-OOB_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 33BC3380DF3F311A71198107 /* libPods-OOB_Example.a */; };
+		89E63661DBB3EF630E01FB3D /* libPods-OOB_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1393BA7607C513D41AF22CB9 /* libPods-OOB_Tests.a */; };
+		9C9560792232953600BE0DB9 /* OOBTemplateVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C9560782232953600BE0DB9 /* OOBTemplateVC.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +38,8 @@
 /* Begin PBXFileReference section */
 		06E7F0B016190A6FA7FD725B /* Pods-OOB_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OOB_Example.release.xcconfig"; path = "Target Support Files/Pods-OOB_Example/Pods-OOB_Example.release.xcconfig"; sourceTree = "<group>"; };
 		0B30F805BA29F9B5B92F256B /* Pods-OOB_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OOB_Example.debug.xcconfig"; path = "Target Support Files/Pods-OOB_Example/Pods-OOB_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		1393BA7607C513D41AF22CB9 /* libPods-OOB_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OOB_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		33BC3380DF3F311A71198107 /* libPods-OOB_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OOB_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		350958EA2F7B0EBF7F59C859 /* Pods-OOB_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OOB_Tests.debug.xcconfig"; path = "Target Support Files/Pods-OOB_Tests/Pods-OOB_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* OOB_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OOB_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -57,11 +60,11 @@
 		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
-		60F82EA1D247E943394C7254 /* Pods_OOB_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OOB_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		68D99656489EE3629A493883 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		741313919B99A4C0CACFA9DE /* OOB.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = OOB.podspec; path = ../OOB.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		8E91649B1AED61CB3F5B089E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		A13ED92E8A7D58EBA7F3B439 /* Pods_OOB_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OOB_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C9560772232953600BE0DB9 /* OOBTemplateVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OOBTemplateVC.h; sourceTree = "<group>"; };
+		9C9560782232953600BE0DB9 /* OOBTemplateVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOBTemplateVC.m; sourceTree = "<group>"; };
 		C9F3B96B8A3BB78EF4D4E477 /* Pods-OOB_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OOB_Tests.release.xcconfig"; path = "Target Support Files/Pods-OOB_Tests/Pods-OOB_Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -73,7 +76,7 @@
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				3D5881B233E78A8AA4FE1D5E /* Pods_OOB_Example.framework in Frameworks */,
+				618C8411AB41B7265053ECF9 /* libPods-OOB_Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,7 +87,7 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				16E394B89220927F23406466 /* Pods_OOB_Tests.framework in Frameworks */,
+				89E63661DBB3EF630E01FB3D /* libPods-OOB_Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,8 +122,8 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				60F82EA1D247E943394C7254 /* Pods_OOB_Example.framework */,
-				A13ED92E8A7D58EBA7F3B439 /* Pods_OOB_Tests.framework */,
+				33BC3380DF3F311A71198107 /* libPods-OOB_Example.a */,
+				1393BA7607C513D41AF22CB9 /* libPods-OOB_Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -132,6 +135,8 @@
 				6003F59D195388D20070C39A /* OOBAppDelegate.m */,
 				6003F5A5195388D20070C39A /* OOBViewController.h */,
 				6003F5A6195388D20070C39A /* OOBViewController.m */,
+				9C9560772232953600BE0DB9 /* OOBTemplateVC.h */,
+				9C9560782232953600BE0DB9 /* OOBTemplateVC.m */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
 			);
@@ -201,7 +206,6 @@
 				6003F586195388D20070C39A /* Sources */,
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
-				36DA23643F2A8C1DD7E64D72 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -290,28 +294,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		36DA23643F2A8C1DD7E64D72 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-OOB_Example/Pods-OOB_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/OOB/OOB.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OOB.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OOB_Example/Pods-OOB_Example-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		5468BA08594C62E8226516C0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -366,6 +348,7 @@
 				6003F59E195388D20070C39A /* OOBAppDelegate.m in Sources */,
 				6003F5A7195388D20070C39A /* OOBViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
+				9C9560792232953600BE0DB9 /* OOBTemplateVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

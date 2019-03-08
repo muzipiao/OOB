@@ -24,6 +24,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '8.0'
   
   s.prefix_header_file = false
+  s.static_framework   = true
 
   s.source_files = 'OOB/Classes/**/*'
   
