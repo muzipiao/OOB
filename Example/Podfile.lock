@@ -1,5 +1,5 @@
 PODS:
-  - OOB (0.1.0):
+  - OOB (0.1.1):
     - OpenCV (~> 3.4.2)
   - OpenCV (3.4.2)
 
@@ -15,7 +15,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  OOB: 295fb0b6ac9af9b97149dd7538e7e2a710050b46
+  OOB: 8c4ad0e28e7a279ccf0da16d7fb0a6e598c34f8e
   OpenCV: 452909747854c92e0f59670961ed5131f5286cb5
 
 PODFILE CHECKSUM: 3b838c9ad2f8bb5a6adef8b51f940e4be1b4e0bf
