@@ -1,0 +1,22 @@
+{
+  "name": "OOB",
+  "version": "0.1.0",
+  "summary": "A short description of OOB.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/lifei/OOB",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "lifei": "lifei_zdjl@126.com"
+  },
+  "source": {
+    "git": "https://github.com/lifei/OOB.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "OOB/Classes/**/*"
+}

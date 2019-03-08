@@ -1,3 +1,34 @@
+# OOB
+
+[![CI Status](https://img.shields.io/travis/lifei/OOB.svg?style=flat)](https://travis-ci.org/lifei/OOB)
+[![Version](https://img.shields.io/cocoapods/v/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
+[![License](https://img.shields.io/cocoapods/l/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
+[![Platform](https://img.shields.io/cocoapods/p/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
+
+## Example
+
+To run the example project, clone the repo, and run `pod install` from the Example directory first.
+
+## Requirements
+
+## Installation
+
+OOB is available through [CocoaPods](https://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+```ruby
+pod 'OOB'
+```
+
+## Author
+
+lifei, lifei_zdjl@126.com
+
+## License
+
+OOB is available under the MIT license. See the LICENSE file for more info.
+
+
 #### **注意：OpenCV 框架( opencv2.framework )超过 100M，无法提交，请至[ OpenCV 官网](http://opencv.org)自行下载，拖入项目` ThirdFramework `文件下即可**
 
 * [iOS图像识别博客](http://cocoafei.top/2017/07/iOS%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB/)
