@@ -68,9 +68,9 @@
      @return 识别图像在block中回调
      */
     [[OOB share] matchTemplate:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-        OOBLog(@"模板图像与视频目标的相似度：%.0f %%",similarValue * 100);
+        OOBLog(@"模板图像与视频目标的相似度：%.0f %%,Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
         // 只有当相似度大于 80% 时才标记，否则不标记
-        if (similarValue > 0.8) {
+        if (similarValue > 0.7) {
             self.markView.hidden = NO;
             self.markView.frame = targetRect;
         }else{
@@ -93,8 +93,8 @@
     // 图像改变后必须重新设置Imageview的图像
     self.markView.image = [OOB share].rectMarkerImage;
     
-    // 调整对比的相似度为 80%
-    [OOB share].similarValue = 0.8;
+    // 调整对比的相似度为 70%
+    [OOB share].similarValue = 0.7;
 }
 
 @end

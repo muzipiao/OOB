@@ -126,6 +126,23 @@ static OOB *instance;
 }
 
 /**
+ * 设置目标图像，并将 Alpha 通道置为白色
+ * Set the target image and set the alpha channel to white
+ */
+-(void)setTargetImg:(UIImage *)targetImg{
+    CGSize tSize = targetImg.size;
+    CGRect tRect = CGRectMake(0, 0, tSize.width, tSize.height);
+    UIGraphicsBeginImageContextWithOptions(tSize, NO, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
+    CGContextFillRect(context, tRect);
+    [targetImg drawInRect:tRect];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    _targetImg = newImage;
+}
+
+/**
  * 标记框的线宽，默认宽度 5.0f。
  * Marker box line width, default width 5.0f.
  */
@@ -189,6 +206,12 @@ static OOB *instance;
         CGSize viewSize = self.previewLayer.bounds.size;
         if (CGRectIsEmpty(self.previewLayer.frame)) {
             viewSize = [UIScreen mainScreen].bounds.size;
+        }
+        if (CGRectIsEmpty(targetRect)) {
+            if (self.resultBlock) {
+                self.resultBlock(CGRectZero, similarValue);
+            }
+            return;
         }
         // 视频默认根据 UIViewContentModeScaleAspectFill 模式进行缩放裁剪
         CGFloat scaleValueX = viewSize.width / videoSize.width;
@@ -319,7 +342,7 @@ static OOB *instance;
     CGRect contextRect = CGRectMake(0, 0, imgWidth + kBorderWidth * 2, imgHeight + kBorderWidth * 2);
     // 标记图像大小
     CGRect targetRect = CGRectMake(kBorderWidth, kBorderWidth, imgWidth, imgHeight);
-    UIGraphicsBeginImageContextWithOptions(contextRect.size, NO, 0.0);
+    UIGraphicsBeginImageContextWithOptions(contextRect.size, NO, 0);
     // 设置线条颜色
     [self.markerLineColor set];
     // 默认是矩形

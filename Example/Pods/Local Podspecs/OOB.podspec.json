@@ -22,8 +22,8 @@
   "static_framework": true,
   "source_files": "OOB/Classes/**/*",
   "dependencies": {
-    "OpenCV": [
-      "~> 3.4.2"
+    "OpenCV2": [
+
     ]
   }
 }

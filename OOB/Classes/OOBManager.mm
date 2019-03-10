@@ -118,14 +118,17 @@
         // 比较结果
         int result_rows = inputMat.rows - tmpReMat.rows + 1;
         int result_cols = inputMat.cols - tmpReMat.cols + 1;
+        if (result_rows < 0 || result_cols < 0) {
+            break;
+        }
         cv::Mat resultMat = cv::Mat(result_cols,result_rows,CV_32FC1);
         cv::matchTemplate(inputMat, tmpReMat, resultMat, cv::TM_CCOEFF_NORMED);
         
         double minVal_temp, maxVal_temp;
         cv::Point minLoc_temp, maxLoc_temp, matchLoc_temp;
         cv::minMaxLoc( resultMat, &minVal_temp, &maxVal_temp, &minLoc_temp, &maxLoc_temp, cv::Mat());
-        if (maxVal_temp > 0.7) {
-            maxVal = maxVal_temp;
+        maxVal = maxVal_temp;
+        if (maxVal >= similarValue) {
             maxLoc = maxLoc_temp;
             currentTmpWidth = tmpCols;
             currentTmpHeight = tmpRows;
@@ -133,7 +136,7 @@
         }
     }
     
-    if (maxVal > similarValue) {
+    if (maxVal >= similarValue) {
         // 目标图像按照缩放比例恢复
         CGFloat zoomScale = 1.0 / scale;
         CGRect rectF = CGRectMake(maxLoc.x * zoomScale, maxLoc.y * zoomScale, currentTmpWidth * zoomScale, currentTmpHeight * zoomScale);

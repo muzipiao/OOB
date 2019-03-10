@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
 
   s.source_files = 'OOB/Classes/**/*'
   
-   s.dependency 'OpenCV', '~> 3.4.2'
+  s.dependency 'OpenCV2'
   
   # s.resource_bundles = {
   #   'OOB' => ['OOB/Assets/*.png']
