@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'OOB'
-  s.version          = '0.1.1'
+  s.version          = '0.1.2'
   s.summary          = 'iOS 通过摄像头图像识别，基于 OpenCV 实现。'
   
   s.description      = <<-DESC
