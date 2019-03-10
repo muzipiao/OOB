@@ -5,12 +5,9 @@
 [![License](https://img.shields.io/cocoapods/l/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
 [![Platform](https://img.shields.io/cocoapods/p/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
 
-
-<figure class="third">
-    <img src="https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/caomei.PNG" height="480" width="220">
-    <img src="https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/jitui.PNG" height="480" width="220">
-    <img src="https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/apple_video.gif" height="480" width="220">
-</figure>
+![](https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/caomei.PNG)
+![](https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/jitui.PNG)
+![](https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/apple_video.gif)
 
 ## 示例
 
