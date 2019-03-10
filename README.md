@@ -5,68 +5,125 @@
 [![License](https://img.shields.io/cocoapods/l/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
 [![Platform](https://img.shields.io/cocoapods/p/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
 
-## Example
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+<figure class="third">
+    <img src="https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/caomei.PNG" height="480" width="220">
+    <img src="https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/jitui.PNG" height="480" width="220">
+    <img src="https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/apple_video.gif" height="480" width="220">
+</figure>
 
-## Requirements
+## 示例
 
-## Installation
+下载分支后，先 `cd` 切换到当前 Example 文件夹目录下，然后执行 `pod install` ，完成后打开 `OOB.xcworkspace` 文件运行。
 
-OOB is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+注意：由于 opencv2.framework 压缩包较大（约 146MB），网速比较慢的情况下，下载时间会较长；个别网络（如长城宽带）会一直下载失败，这种情况可手动集成。
+
+## 环境需求
+
+* iOS 8+
+* ARC
+* OpenCV2
+* Foundation.framework
+* UIKit.framework
+* AVFoundation.framework
+
+## 安装
+
+### CocoaPods
+
+CocoaPods 是最简单方便的安装方法，编辑 Podfile 文件，添加
 
 ```ruby
 pod 'OOB'
 ```
+然后执行 `pod install` 即可。
 
-## Author
+### 直接安装
 
-lifei, lifei_zdjl@126.com
+1. 直接安装 `OOB` 前，请先安装 `OpenCV`，参考我的一篇博客：[iOS集成OpenCV博客](http://cocoafei.top/2017/07/iOS%E9%9B%86%E6%88%90OpenCV/)
+2. 从 Git 下载最新代码，找到和 README 同级的 OOB 文件夹，将 OOB 文件夹拖入项目即可。
+3. 在需要使用的地方导入 `#import "OOB.h"` 即可。
 
-## License
+## 用法
 
-OOB is available under the MIT license. See the LICENSE file for more info.
+### 设置视频预览图层
+
+设置视频预览图层，如果不设置则不展示预览视频，返回的目标坐标默认是全屏时的坐标。设置视频预览图层很简单，添加代码：
+
+```objc
+// 设置视频预览图层
+[OOB share].preview = self.view;
+```
+### 调用图像识别
+
+使用 OOB 很简单，在需要进行图像识别的地方，添加代码：
+
+```objc
+/**
+* 开始图像识别
+* targetImg: 待识别的目标图像
+@param targetRect 目标图像在预览图层中的 frame
+@param similarValue 目标模板与视频图像中图像的相似度
+@return 识别图像在block中回调
+*/
+[[OOB share] matchTemplate:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+  OOBLog(@"相似度：%.0f %%，目标位置：Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
+}];
+```
+Block 回调会返回目标位置，和对比的相似度，Block 刷新频率和视频帧率相同。
+
+### 结束图像识别
+
+识别任务结束，或当期视图销毁时，调用 `[[OOB share] stopMatch];` 释放资源即可。
+
+### 其他设置
+
+切换目标图像，可随时切换
+
+```objc
+[OOB share].targetImage = [UIImage imageNamed:@"apple"];
+```
+
+切换前置后置摄像头
+
+```objc
+// 切换为后置摄像头
+[OOB share].cameraType = OOBCameraTypeBack;
+// 切换为前置摄像头
+[OOB share].cameraType = OOBCameraTypeFront;
+```
+
+设置预览视频图像质量，默认预览视频尺寸 1920x1080
+
+```objc
+// 设置视频预览质量为高
+[OOB share].sessionPreset = AVCaptureSessionPresetHigh;
+// 设置视频预览尺寸为 640x480
+[OOB share].sessionPreset = AVCaptureSessionPreset640x480;
+```
+设置相似度阈值，默认是 0.7，最大为 1。值设置的越小误报率高，值设置的越大越难匹配。
+
+```objc
+// 设置阈值为 0.8，识别更精确一些。
+[OOB share].similarValue = 0.8;
+```
+
+生成一张标记目标的 UIImage 图片，自带一张矩形和一张圆形的标记图片。
+
+```objc
+// 更改标记框框颜色为深红色：R=254 G=67 B=101
+[OOB share].markerLineColor =  [UIColor colorWithRed:254.0/255.0 green:67.0/255.0 blue:101.0/255.0 alpha:1.0];
+// 更改标记框线宽为 8.0
+[OOB share].markerLineWidth = 8.0;
+// 更改矩形框切圆角半径为 8.0
+[OOB share].markerCornerRadius = 8.0;
+// 生成一张矩形标记框
+UIImage *rectImage = [OOB share].rectMarkerImage;
+// 生成一张椭圆标记框
+UIImage *ovalImage = [OOB share].ovalMarkerImage;
+```
 
 
-#### **注意：OpenCV 框架( opencv2.framework )超过 100M，无法提交，请至[ OpenCV 官网](http://opencv.org)自行下载，拖入项目` ThirdFramework `文件下即可**
+## 许可
 
-* [iOS图像识别博客](http://cocoafei.top/2017/07/iOS%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB/)
-
-* [iOS集成OpenCV博客](http://cocoafei.top/2017/07/iOS%E9%9B%86%E6%88%90OpenCV/)
-
-## iOS通过摄像头动态识别图像
-
-### 前言：
-
-> **目前的计算机图像识别，透过现象看本质，主要分为两大类:**
-> 
-> * 基于规则运算的图像识别，例如颜色形状等模板匹配方法
-> * 基于统计的图像识别。例如机器学习ML，神经网络等人工智能方法
-> 
-> 区别：模板匹配方法适合固定的场景或物体识别，机器学习方法适合大量具有共同特征的场景或物体识别。
-> 
-> 对比：无论从识别率，准确度，还是适应多变场景变换来讲，机器学习ML都是优于模板匹配方法的；前提你有`大量的数据`来训练分类器。如果是仅仅是识别特定场景、物体或者形状，使用模板匹配方法更简单更易于实现。
-> 
-> 目标：实现在iOS客户端，通过摄像头发现并标记目标。
-> 
-
-### 实现效果图
-
-![效果图](https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OpenCVBlogImage/OpenCVBlogMergeImg.png)
-
-![logo](https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OpenCVBlogImage/MLMerge.png)
-
-![OpenCV处理图像](https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OpenCVBlogImage/OpenCVToPsImg.PNG)
-
-
-### 可能出现的异常：
-
-1. 将从官网下载的 opencv2.framework 拖入项目后，出现找不到 opencv2 库的错误：**`ld: framework not found opencv2    clang:error: linker command failed with...`**。原因估计是打开项目用的 XCode 9，而拖入的 opencv2.framework 版本为 3.2 版本；看`opencv2.framework 的 3.3 版本`更新说明，估计 XCode 与 3.2 版本不兼容，**下载最新4.0版本**[https://jaist.dl.sourceforge.net/project/opencvlibrary/4.0.0/opencv-4.0.0-ios-framework.zip](https://jaist.dl.sourceforge.net/project/opencvlibrary/4.0.0/opencv-4.0.0-ios-framework.zip)，拖入ThirdFramework文件夹下，编译即可通过。
-2. 如果为3.3版本，拖入`opencv2.framework的3.3版本`后，编译出现大量类似警告：
-
-* Direct access in function '\_\_\_cxx\_global\_var\_init' from file ...
-* Direct access in function '\_\_\_cxx\_global\_var\_init.2' from file ... 
-* Direct access in function '\_\_\_cxx\_global\_var\_init.3' from file ...  
-
-Google 搜索，以及在 stackoverflow 上发现很多人遇到同样问题，暂时未找到解决办法，但不影响功能使用，暂时忽略即可。(备注：3.4.1 以上版本，现在是 4.0.0 版本已经修复此问题，拖入后不再出现这些警告)
+OOB在MIT许可下可用。有关详细信息，请参阅LICENSE文件。

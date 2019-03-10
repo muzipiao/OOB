@@ -29,7 +29,9 @@ Pod::Spec.new do |s|
   s.source_files = 'OOB/Classes/**/*'
   
   s.dependency 'OpenCV2'
-  
+
+  s.frameworks = 'Foundation', 'UIKit', 'AVFoundation'
+
   # s.resource_bundles = {
   #   'OOB' => ['OOB/Assets/*.png']
   # }
