@@ -59,7 +59,7 @@ static OOB *instance;
 - (instancetype)init{
     self = [super init];
     if (self) {
-        _sessionPreset = AVCaptureSessionPreset1920x1080; // 默认视频图像尺寸 1920x1080(Default video image size)
+        _sessionPreset = AVCaptureSessionPresetHigh; // 默认视频图像尺寸 1920x1080(Default video image size)
         _cameraType = OOBCameraTypeBack; // 默认后置摄像头(default rear camera)
         _markerLineColor = [UIColor redColor]; // 标记图像默认是红色(The tag image is red by default)
         _markerCornerRadius = 5.0f; // 如果是矩形，默认切圆角半径(If it is a rectangle, the default corner radius)
@@ -78,12 +78,34 @@ static OOB *instance;
         [self.session removeInput:self.frontCameraInput];
         if ([self.session canAddInput:self.backCameraInput]) {
             [self.session addInput:self.backCameraInput];
+            //前置摄像头是镜像的
+            for (AVCaptureVideoDataOutput *tempOutput in self.session.outputs) {
+                for (AVCaptureConnection *avCon in tempOutput.connections) {
+                    if (avCon.supportsVideoOrientation) {
+                        avCon.videoOrientation = AVCaptureVideoOrientationPortrait;
+                    }
+                    if (avCon.supportsVideoMirroring) {
+                        avCon.videoMirrored = NO;
+                    }
+                }
+            }
             [self.session startRunning];
         }
     }else if (cameraType == OOBCameraTypeFront){
         [self.session removeInput:self.backCameraInput];
         if ([self.session canAddInput:self.frontCameraInput]) {
             [self.session addInput:self.frontCameraInput];
+            //前置摄像头是镜像的
+            for (AVCaptureVideoDataOutput *tempOutput in self.session.outputs) {
+                for (AVCaptureConnection *avCon in tempOutput.connections) {
+                    if (avCon.supportsVideoOrientation) {
+                        avCon.videoOrientation = AVCaptureVideoOrientationPortrait;
+                    }
+                    if (avCon.supportsVideoMirroring) {
+                        avCon.videoMirrored = YES;
+                    }
+                }
+            }
             [self.session startRunning];
         }
     }
@@ -201,6 +223,8 @@ static OOB *instance;
     CGRect targetRect = CGRectFromString([targetDict objectForKey:kTargetRect]);
     CGFloat similarValue = [[targetDict objectForKey:kSimilarValue] floatValue];
     CGSize videoSize = CGSizeFromString([targetDict objectForKey:kVideoSize]);
+    // 将图像字节对齐造成的误差修正
+    CGFloat videoFillWidth =  [[targetDict objectForKey:kVideoFillWidth] floatValue];
     dispatch_async(dispatch_get_main_queue(), ^{
         // 目标坐标转换到缩放图像上的坐标
         CGSize viewSize = self.previewLayer.bounds.size;
@@ -218,9 +242,9 @@ static OOB *instance;
         CGFloat scaleValueY = viewSize.height / videoSize.height;
         CGFloat scaleValue = scaleValueY > scaleValueX ? scaleValueY : scaleValueX;
         // 坐标转换，图像可能显示不全
-        CGFloat w = targetRect.size.width * scaleValue;
+        CGFloat w = targetRect.size.width * scaleValue - videoFillWidth * scaleValue * 0.5;
         CGFloat h = targetRect.size.height * scaleValue;
-        CGFloat leftMargin =  (videoSize.width * scaleValue - viewSize.width) * 0.5;
+        CGFloat leftMargin =  (videoSize.width * scaleValue - viewSize.width - videoFillWidth * scaleValue) * 0.5;
         CGFloat topMargin =  (videoSize.height * scaleValue - viewSize.height) * 0.5;
         CGFloat x = targetRect.origin.x * scaleValue - leftMargin;
         CGFloat y = targetRect.origin.y * scaleValue - topMargin;
@@ -256,7 +280,7 @@ static OOB *instance;
         
         // 设置输出格式kCVPixelBufferWidthKey kCVPixelBufferHeightKey
         NSDictionary *settings = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                  [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA],                                   kCVPixelBufferPixelFormatTypeKey,nil];
+                                  [NSNumber numberWithUnsignedInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange],                                   kCVPixelBufferPixelFormatTypeKey,nil];
         
         output.videoSettings = settings;
         
@@ -270,6 +294,14 @@ static OOB *instance;
         }
         if ([tempSession canAddOutput:output]) {
             [tempSession addOutput:output];
+        }
+        //前置摄像头是镜像的
+        for (AVCaptureVideoDataOutput *tempOutput in tempSession.outputs) {
+            for (AVCaptureConnection *avCon in tempOutput.connections) {
+                if (avCon.supportsVideoOrientation) {
+                    avCon.videoOrientation = AVCaptureVideoOrientationPortrait;
+                }
+            }
         }
     }
     return _session;
@@ -362,7 +394,7 @@ static OOB *instance;
 ///MARK: - 停止识别并释放资源
 -(void)stopMatch{
     // 恢复默认值（Restore Defaults）
-    _sessionPreset = AVCaptureSessionPreset1920x1080; // 默认视频图像尺寸 1920x1080(Default video image size)
+    _sessionPreset = AVCaptureSessionPresetHigh; // 默认视频图像尺寸 1920x1080(Default video image size)
     _cameraType = OOBCameraTypeBack; // 默认后置摄像头(default rear camera)
     _markerLineColor = [UIColor redColor]; // 标记图像默认是红色(The tag image is red by default)
     _markerCornerRadius = 5.0f; // 如果是矩形，默认切圆角半径(If it is a rectangle, the default corner radius)

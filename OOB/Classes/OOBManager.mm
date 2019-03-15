@@ -17,74 +17,56 @@
 #import "OOBManager.h"
 
 @implementation OOBManager
+// 全局变量
+static UIImage *globalTemplateImg = nil;
+static cv::Mat globalTemplateMat;
+static CGFloat videoRenderWidth = 0;
 
 /**
- * 识别目标图像
+ * 识别目标图像并返回目标坐标，相似度，视频的原始尺寸
+ * Identify the target image and return the target coordinates, similarity, the original size of the video
+ @param sampleBuffer 视频图像流(sampleBuffer video image stream)
+ @param tImg 待识别的目标图像(target image to be recognized)
+ @param similarValue 与视频图像对比的相似度(Similarity to video image comparison)
+ @return 结果字典，包含目标坐标，相似度，视频的原始尺寸(result dictionary containing target coordinates, similarity, original size of the video)
  */
 +(NSDictionary *)recoObjLocation:(CMSampleBufferRef)sampleBuffer TemplateImg:(UIImage *)tImg SimilarValue:(CGFloat)similarValue{
     // 视频图像矩阵
     cv::Mat videoMat;
-    videoMat = [self bufferToMat:sampleBuffer];
-    CGSize orginVideoSize = CGSizeMake(videoMat.cols, videoMat.rows);
+    videoMat = [self bufferToGrayMat:sampleBuffer];
+    CGSize orginVideoSize = CGSizeMake(videoRenderWidth, videoMat.rows);
+    CGFloat videoFillWidth = videoMat.cols - videoRenderWidth;
     // 初始化矩阵
     NSDictionary *tempDict = @{kTargetRect:NSStringFromCGRect(CGRectZero),
                                kVideoSize:NSStringFromCGSize(orginVideoSize),
-                               kSimilarValue:@(0)};
+                               kSimilarValue:@(0),
+                               kVideoFillWidth:@(videoFillWidth)};
     if (!tImg) {
         OOBLog(@"目标图像为空");
         return tempDict;
     }
-    // 将视频原图像缩小
-    /*
-     * AVCaptureSessionPreset3840x2160
-     * AVCaptureSessionPreset1920x1080
-     * AVCaptureSessionPreset1280x720
-     * AVCaptureSessionPresetiFrame960x540
-     * AVCaptureSessionPreset640x480
-     * AVCaptureSessionPreset352x288
-     */
-    CGFloat videoScale = 0.2;
-    switch (videoMat.rows) {
-        case 3840:
-            videoScale = 0.1;
-            break;
-        case 1920:
-            videoScale = 0.2;
-            break;
-        case 1280:
-            videoScale = 0.3;
-            break;
-        case 960:
-            videoScale = 0.4;
-            break;
-        case 640:
-            videoScale = 0.5;
-            break;
-        case 352:
-            videoScale = 1.0;
-            break;
-        default:
-            videoScale = 0.2;
-            break;
-    }
-    
-    int videoRows = videoMat.rows * videoScale;
-    int videoCols = videoMat.cols * videoScale;
-    cv::Size videoReSize = cv::Size(videoCols,videoRows);
+    CGFloat orginVideoWidth = videoMat.cols;
+    CGFloat orginVideoHeight = videoMat.rows;
+    int videoReCols = 160; // 宽度固定为160
+    CGFloat videoScale = 160.0/orginVideoWidth;
+    int videoReRows = (int)((CGFloat)videoReCols * orginVideoHeight)/orginVideoWidth; // 保持宽高比
+    cv::Size videoReSize = cv::Size(videoReCols,videoReRows);
     cv::resize(videoMat, videoMat, videoReSize);
-    cv::cvtColor(videoMat, videoMat, CV_BGR2GRAY);
-    
     // 待比较的图像
-    cv::Mat tempMat;
-    UIImageToMat(tImg, tempMat);
-    cv::cvtColor(tempMat, tempMat, CV_BGR2GRAY);
+    cv::Mat tempMat = globalTemplateMat;;
+    if (![tImg isEqual:globalTemplateImg] || globalTemplateMat.empty()) {
+        globalTemplateImg = tImg;
+        cv::Mat colorMat;
+        UIImageToMat(tImg, colorMat);
+        cv::cvtColor(colorMat, globalTemplateMat, CV_BGR2GRAY);
+    }
     
     //判断是否为空，为空直接返回
     if (videoMat.empty() || tempMat.empty()) {
         OOBLog(@"图像矩阵为空");
         return tempDict;
     }
-    NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:[self compareInput:videoMat templateMat:tempMat VideoScale:videoScale SimilarValue:similarValue]];
+    NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:[self compareInput:videoMat templateMat:tempMat VideoScale:videoScale SimilarValue:similarValue VideoFillWidth:videoFillWidth]];
     [resultDict setObject:NSStringFromCGSize(orginVideoSize) forKey:kVideoSize];
     return resultDict.copy;
 }
@@ -96,10 +78,11 @@
  @param tmpMat 待识别的目标图像矩阵(Target image matrix to be identified)
  @param scale 视频缩放比例(video scaling)
  @param similarValue 设置的对比相似度阈值(set contrast similarity threshold)
+ @param videoFillWidth 视频图像字节补齐宽度(Video image byte fill width)
  @return 对比结果，包含目标坐标，相似度(comparison result, including target coordinates, similarity)
  */
-+(NSDictionary *)compareInput:(cv::Mat) inputMat templateMat:(cv::Mat)tmpMat VideoScale:(CGFloat)scale SimilarValue:(CGFloat)similarValue{
-    // 将待比较的图像缩放至视频宽度的 30% 至 50%
++(NSDictionary *)compareInput:(cv::Mat) inputMat templateMat:(cv::Mat)tmpMat VideoScale:(CGFloat)scale SimilarValue:(CGFloat)similarValue VideoFillWidth:(CGFloat)videoFillWidth{
+    // 将待比较的图像缩放至视频宽度的 20% 至 50%
     NSArray *tmpArray = @[@(0.2),@(0.3),@(0.4),@(0.5)];
     int currentTmpWidth = 0; // 匹配的模板图像宽度
     int currentTmpHeight = 0; // 匹配的模板图像高度
@@ -140,46 +123,43 @@
         // 目标图像按照缩放比例恢复
         CGFloat zoomScale = 1.0 / scale;
         CGRect rectF = CGRectMake(maxLoc.x * zoomScale, maxLoc.y * zoomScale, currentTmpWidth * zoomScale, currentTmpHeight * zoomScale);
-        NSDictionary *tempDict = @{kTargetRect:NSStringFromCGRect(rectF),kSimilarValue:@(maxVal)};
+        NSDictionary *tempDict = @{kTargetRect:NSStringFromCGRect(rectF),
+                                   kSimilarValue:@(maxVal),
+                                   kVideoFillWidth:@(videoFillWidth)};
         return tempDict;
     }else{
-        NSDictionary *tempDict = @{kTargetRect:NSStringFromCGRect(CGRectZero),kSimilarValue:@(maxVal)};
+        NSDictionary *tempDict = @{kTargetRect:NSStringFromCGRect(CGRectZero),
+                                   kSimilarValue:@(maxVal),
+                                   kVideoFillWidth:@(videoFillWidth)};
         return tempDict;
     }
 }
 
 /**
- * 将视频流转换为图像矩阵
- * Convert video stream to image matrix
+ * 高效将视频流转换为 Mat 图像矩阵
+ * Efficiently convert video streams to Mat image matrices
  @param sampleBuffer 视频流(video stream)
  @return OpenCV 可用的图像矩阵(OpenCV available image matrix)
  */
-+(cv::Mat)bufferToMat:(CMSampleBufferRef) sampleBuffer{
-    CVImageBufferRef imgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
-    
-    //锁定内存
-    CVPixelBufferLockBaseAddress(imgBuf, 0);
-    // get the address to the image data
-    void *imgBufAddr = CVPixelBufferGetBaseAddress(imgBuf);
-    
-    // get image properties
-    int w = (int)CVPixelBufferGetWidth(imgBuf);
-    int h = (int)CVPixelBufferGetHeight(imgBuf);
-    
-    // create the cv mat
-    cv::Mat mat(h, w, CV_8UC4, imgBufAddr, 0);
-    
-    //旋转90度
-    cv::Mat transMat;
-    cv::transpose(mat, transMat);
-    
-    //翻转,1是x方向，0是y方向，-1位Both
-    cv::Mat flipMat;
-    cv::flip(transMat, flipMat, 1);
-    
-    CVPixelBufferUnlockBaseAddress(imgBuf, 0);
-    
-    return flipMat;
++(cv::Mat)bufferToGrayMat:(CMSampleBufferRef) sampleBuffer{
+    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
+    if (format != kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+        OOBLog(@"Only YUV is supported"); // Y 是亮度，UV 是颜色
+        return cv::Mat();
+    }
+    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+    void *baseaddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
+    CGFloat width = CVPixelBufferGetWidth(pixelBuffer);
+    videoRenderWidth = width; // 保存渲染宽度
+    CGFloat colCount = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 0);
+    if (width != colCount) {
+        width = colCount; // 如果有字节对齐
+    }
+    CGFloat height = CVPixelBufferGetHeight(pixelBuffer);
+    cv::Mat mat(height, width, CV_8UC1, baseaddress, 0);
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+    return mat;
 }
 
 @end

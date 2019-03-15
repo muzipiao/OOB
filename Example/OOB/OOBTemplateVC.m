@@ -93,8 +93,8 @@
     // 图像改变后必须重新设置Imageview的图像
     self.markView.image = [OOB share].rectMarkerImage;
     
-    // 调整对比的相似度为 70%
-    [OOB share].similarValue = 0.7;
+    // 调整对比的相似度为 80%
+    [OOB share].similarValue = 0.8;
 }
 
 @end

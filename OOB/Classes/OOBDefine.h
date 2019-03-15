@@ -28,6 +28,12 @@
 #define kVideoSize @"kVideoSize"
 
 /**
+ * 视频图像字节补齐宽度
+ * Video image byte fill width
+ */
+#define kVideoFillWidth @"kVideoFillWidth"
+
+/**
  * Log 日志
  * Log log
  */
