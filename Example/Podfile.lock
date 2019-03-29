@@ -15,7 +15,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  OOB: 740df842fee33157aa6e42c56e9cd9ed1960d215
+  OOB: a8cef6db23b26ce9c3fd89cf860fafed1da0ceee
   OpenCV2: e770b5a33a269953e6c29b44acbb0433f08ec5ae
 
 PODFILE CHECKSUM: 3b838c9ad2f8bb5a6adef8b51f940e4be1b4e0bf
