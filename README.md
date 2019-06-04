@@ -1,6 +1,7 @@
 # OOB
 
-[![CI Status](https://img.shields.io/travis/lifei/OOB.svg?style=flat)](https://travis-ci.org/lifei/OOB)
+[![CI Status](https://img.shields.io/travis/muzipiao/OOB.svg?style=flat)](https://travis-ci.org/muzipiao/OOB)
+[![codecov](https://codecov.io/gh/muzipiao/OOB/branch/master/graph/badge.svg)](https://codecov.io/gh/muzipiao/OOB)
 [![Version](https://img.shields.io/cocoapods/v/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
 [![License](https://img.shields.io/cocoapods/l/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
 [![Platform](https://img.shields.io/cocoapods/p/OOB.svg?style=flat)](https://cocoapods.org/pods/OOB)
@@ -17,8 +18,6 @@
 
 ## 环境需求
 
-* iOS 8+
-* ARC
 * OpenCV2
 * Foundation.framework
 * UIKit.framework
