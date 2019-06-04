@@ -3,6 +3,7 @@
 platform :ios, '8.0'
 
 target 'OOB_Example' do
+  pod 'OpenCV2', '~> 4.1.0'
   pod 'OOB', :path => '../'
 
   target 'OOB_Tests' do

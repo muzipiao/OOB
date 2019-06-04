@@ -16,11 +16,16 @@
 #pragma clang pop
 #import "OOBManager.h"
 
+using namespace cv;
+
 @implementation OOBManager
 // 全局变量
 static UIImage *globalTemplateImg = nil;
-static cv::Mat globalTemplateMat;
+static Mat globalTemplateMat;
 static CGFloat videoRenderWidth = 0;
+static CIContext *globalContext = nil;
+static CIDetector *globalLowDetector = nil;
+static CIDetector *globalHighDetector = nil;
 
 /**
  * 识别目标图像并返回目标坐标，相似度，视频的原始尺寸
@@ -32,7 +37,7 @@ static CGFloat videoRenderWidth = 0;
  */
 +(NSDictionary *)recoObjLocation:(CMSampleBufferRef)sampleBuffer TemplateImg:(UIImage *)tImg SimilarValue:(CGFloat)similarValue{
     // 视频图像矩阵
-    cv::Mat videoMat;
+    Mat videoMat;
     videoMat = [self bufferToGrayMat:sampleBuffer];
     CGSize orginVideoSize = CGSizeMake(videoRenderWidth, videoMat.rows);
     CGFloat videoFillWidth = videoMat.cols - videoRenderWidth;
@@ -51,14 +56,14 @@ static CGFloat videoRenderWidth = 0;
     CGFloat videoScale = 160.0/orginVideoWidth;
     int videoReRows = (int)((CGFloat)videoReCols * orginVideoHeight)/orginVideoWidth; // 保持宽高比
     cv::Size videoReSize = cv::Size(videoReCols,videoReRows);
-    cv::resize(videoMat, videoMat, videoReSize);
+    resize(videoMat, videoMat, videoReSize);
     // 待比较的图像
-    cv::Mat tempMat = globalTemplateMat;;
+    Mat tempMat = globalTemplateMat;;
     if (![tImg isEqual:globalTemplateImg] || globalTemplateMat.empty()) {
         globalTemplateImg = tImg;
-        cv::Mat colorMat;
+        Mat colorMat;
         UIImageToMat(tImg, colorMat);
-        cv::cvtColor(colorMat, globalTemplateMat, CV_BGR2GRAY);
+        cvtColor(colorMat, globalTemplateMat, CV_BGR2GRAY);
     }
     
     //判断是否为空，为空直接返回
@@ -81,7 +86,7 @@ static CGFloat videoRenderWidth = 0;
  @param videoFillWidth 视频图像字节补齐宽度(Video image byte fill width)
  @return 对比结果，包含目标坐标，相似度(comparison result, including target coordinates, similarity)
  */
-+(NSDictionary *)compareInput:(cv::Mat) inputMat templateMat:(cv::Mat)tmpMat VideoScale:(CGFloat)scale SimilarValue:(CGFloat)similarValue VideoFillWidth:(CGFloat)videoFillWidth{
++(NSDictionary *)compareInput:(Mat) inputMat templateMat:(Mat)tmpMat VideoScale:(CGFloat)scale SimilarValue:(CGFloat)similarValue VideoFillWidth:(CGFloat)videoFillWidth{
     // 将待比较的图像缩放至视频宽度的 20% 至 50%
     NSArray *tmpArray = @[@(0.2),@(0.3),@(0.4),@(0.5)];
     int currentTmpWidth = 0; // 匹配的模板图像宽度
@@ -95,21 +100,21 @@ static CGFloat videoRenderWidth = 0;
         // 待比较图像高度，保持宽高比
         int tmpRows = (tmpCols * tmpMat.rows) / tmpMat.cols;
         // 缩放后的图像
-        cv::Mat tmpReMat;
+        Mat tmpReMat;
         cv::Size tmpReSize = cv::Size(tmpCols,tmpRows);
-        cv::resize(tmpMat, tmpReMat, tmpReSize);
+        resize(tmpMat, tmpReMat, tmpReSize);
         // 比较结果
         int result_rows = inputMat.rows - tmpReMat.rows + 1;
         int result_cols = inputMat.cols - tmpReMat.cols + 1;
         if (result_rows < 0 || result_cols < 0) {
             break;
         }
-        cv::Mat resultMat = cv::Mat(result_cols,result_rows,CV_32FC1);
-        cv::matchTemplate(inputMat, tmpReMat, resultMat, cv::TM_CCOEFF_NORMED);
+        Mat resultMat = Mat(result_cols,result_rows,CV_32FC1);
+        matchTemplate(inputMat, tmpReMat, resultMat, TM_CCOEFF_NORMED);
         
         double minVal_temp, maxVal_temp;
         cv::Point minLoc_temp, maxLoc_temp, matchLoc_temp;
-        cv::minMaxLoc( resultMat, &minVal_temp, &maxVal_temp, &minLoc_temp, &maxLoc_temp, cv::Mat());
+        minMaxLoc( resultMat, &minVal_temp, &maxVal_temp, &minLoc_temp, &maxLoc_temp, Mat());
         maxVal = maxVal_temp;
         if (maxVal >= similarValue) {
             maxLoc = maxLoc_temp;
@@ -141,12 +146,12 @@ static CGFloat videoRenderWidth = 0;
  @param sampleBuffer 视频流(video stream)
  @return OpenCV 可用的图像矩阵(OpenCV available image matrix)
  */
-+(cv::Mat)bufferToGrayMat:(CMSampleBufferRef) sampleBuffer{
++(Mat)bufferToGrayMat:(CMSampleBufferRef) sampleBuffer{
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
     if (format != kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
         OOBLog(@"Only YUV is supported"); // Y 是亮度，UV 是颜色
-        return cv::Mat();
+        return Mat();
     }
     CVPixelBufferLockBaseAddress(pixelBuffer, 0);
     void *baseaddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
@@ -157,7 +162,7 @@ static CGFloat videoRenderWidth = 0;
         width = colCount; // 如果有字节对齐
     }
     CGFloat height = CVPixelBufferGetHeight(pixelBuffer);
-    cv::Mat mat(height, width, CV_8UC1, baseaddress, 0);
+    Mat mat(height, width, CV_8UC1, baseaddress, 0);
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
     return mat;
 }
