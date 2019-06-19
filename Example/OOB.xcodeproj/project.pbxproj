@@ -23,6 +23,8 @@
 		618C8411AB41B7265053ECF9 /* libPods-OOB_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 33BC3380DF3F311A71198107 /* libPods-OOB_Example.a */; };
 		89E63661DBB3EF630E01FB3D /* libPods-OOB_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1393BA7607C513D41AF22CB9 /* libPods-OOB_Tests.a */; };
 		9C9560792232953600BE0DB9 /* OOBTemplateVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C9560782232953600BE0DB9 /* OOBTemplateVC.m */; };
+		9CDC108E22BA29CB0016201B /* oob_apple.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CDC108D22BA29CB0016201B /* oob_apple.mp4 */; };
+		9CDC109122BA3E070016201B /* oob_apple.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CDC108D22BA29CB0016201B /* oob_apple.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +67,7 @@
 		8E91649B1AED61CB3F5B089E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		9C9560772232953600BE0DB9 /* OOBTemplateVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OOBTemplateVC.h; sourceTree = "<group>"; };
 		9C9560782232953600BE0DB9 /* OOBTemplateVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOBTemplateVC.m; sourceTree = "<group>"; };
+		9CDC108D22BA29CB0016201B /* oob_apple.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = oob_apple.mp4; sourceTree = "<group>"; };
 		C9F3B96B8A3BB78EF4D4E477 /* Pods-OOB_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OOB_Tests.release.xcconfig"; path = "Target Support Files/Pods-OOB_Tests/Pods-OOB_Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -158,6 +161,7 @@
 		6003F5B5195388D20070C39A /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				9CDC108D22BA29CB0016201B /* oob_apple.mp4 */,
 				6003F5BB195388D20070C39A /* Tests.m */,
 				6003F5B6195388D20070C39A /* Supporting Files */,
 			);
@@ -280,6 +284,7 @@
 			files = (
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
+				9CDC109122BA3E070016201B /* oob_apple.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,6 +293,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */,
+				9CDC108E22BA29CB0016201B /* oob_apple.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

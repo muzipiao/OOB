@@ -58,7 +58,6 @@ static CIDetector *globalHighDetector = nil;
     cv::Size videoReSize = cv::Size(videoReCols,videoReRows);
     resize(videoMat, videoMat, videoReSize);
     // 待比较的图像
-    Mat tempMat = globalTemplateMat;;
     if (![tImg isEqual:globalTemplateImg] || globalTemplateMat.empty()) {
         globalTemplateImg = tImg;
         Mat colorMat;
@@ -67,11 +66,11 @@ static CIDetector *globalHighDetector = nil;
     }
     
     //判断是否为空，为空直接返回
-    if (videoMat.empty() || tempMat.empty()) {
+    if (videoMat.empty() || globalTemplateMat.empty()) {
         OOBLog(@"图像矩阵为空");
         return tempDict;
     }
-    NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:[self compareInput:videoMat templateMat:tempMat VideoScale:videoScale SimilarValue:similarValue VideoFillWidth:videoFillWidth]];
+    NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:[self compareInput:videoMat templateMat:globalTemplateMat VideoScale:videoScale SimilarValue:similarValue VideoFillWidth:videoFillWidth]];
     [resultDict setObject:NSStringFromCGSize(orginVideoSize) forKey:kVideoSize];
     return resultDict.copy;
 }

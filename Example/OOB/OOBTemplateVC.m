@@ -8,11 +8,15 @@
 
 #import "OOBTemplateVC.h"
 #import "OOB.h"
+#import <objc/message.h>
 
 @interface OOBTemplateVC ()
 
 // 标记目标的图片框，用户可自定义
 @property (nonatomic, strong) UIImageView *markView;
+
+// 显示相似度标签
+@property (nonatomic, strong) UILabel *similarLabel;
 
 @end
 
@@ -48,6 +52,18 @@
     self.markView.image = [OOB share].rectMarkerImage; // 设置标记图像为矩形
     markerImgView.hidden = YES;
     
+    // 相似度标签
+    UILabel *simLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
+    simLabel.text = @"与目标相似度：0 %";
+    simLabel.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:simLabel];
+    self.similarLabel = simLabel;
+    [simLabel sizeToFit];
+    
+    CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
+    CGFloat labelHeight = simLabel.bounds.size.height;
+    simLabel.frame = CGRectMake(0, 20, screenWidth, labelHeight);
+    
     // 设置可选属性
     [self optionalProperty];
 }
@@ -69,6 +85,7 @@
      */
     [[OOB share] matchTemplate:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
         OOBLog(@"模板图像与视频目标的相似度：%.0f %%,Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
+        self.similarLabel.text = [NSString stringWithFormat:@"与目标相似度：%.0f %%",similarValue * 100];
         // 只有当相似度大于 80% 时才标记，否则不标记
         if (similarValue > 0.7) {
             self.markView.hidden = NO;

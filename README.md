@@ -120,6 +120,6 @@ UIImage *ovalImage = [OOB share].ovalMarkerImage;
 ```
 
 
-## 许可
+## 其他
 
-OOB在MIT许可下可用。有关详细信息，请参阅LICENSE文件。
+如果您觉得有所帮助，请在 [GitHub OOBDemo](https://github.com/muzipiao/OOB) 上赏个Star ⭐️，您的鼓励是我前进的动力

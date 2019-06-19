@@ -285,7 +285,7 @@ static OOB *instance;
         output.videoSettings = settings;
         
         // 设置输出的代理
-        dispatch_queue_t videoQueue = dispatch_queue_create("OBJRECO_VIDEO_QUEUE", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_t videoQueue = dispatch_queue_create("OOB_VIDEO_QUEUE", DISPATCH_QUEUE_SERIAL);
         [output setSampleBufferDelegate:self queue:videoQueue];
         
         // 将输入输出添加到会话，连接
@@ -314,7 +314,7 @@ static OOB *instance;
         AVCaptureDevice *device = [self cameraWithPosition:AVCaptureDevicePositionBack];
         _backCameraInput = [[AVCaptureDeviceInput  alloc] initWithDevice:device error:&error];
         if (error) {
-            OOBLog(@"后置摄像头获取失败");
+            OOBLog(@"后置摄像头获取失败，error:%@", error);
         }
     }
     return _backCameraInput;
@@ -327,7 +327,7 @@ static OOB *instance;
         AVCaptureDevice *device = [self cameraWithPosition:AVCaptureDevicePositionFront];
         _frontCameraInput = [[AVCaptureDeviceInput alloc] initWithDevice:device error:&error];
         if (error) {
-            OOBLog(@"前置摄像头获取失败");
+            OOBLog(@"前置摄像头获取失败，error:%@", error);
         }
     }
     return _frontCameraInput;

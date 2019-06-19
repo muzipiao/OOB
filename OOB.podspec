@@ -1,9 +1,9 @@
 Pod::Spec.new do |s|
   s.name             = 'OOB'
-  s.version          = '0.1.3'
+  s.version          = '0.1.4'
   s.summary          = 'iOS 通过摄像头图像识别，基于 OpenCV 实现。'
   s.description      = <<-DESC
-                        基于 OpenCV，开发 iOS 平台的图像识别。前期开发优化基于“模板匹配法”的图像识别 API，后期计划开发基于 Haar 和 LBP 等特征的图像分类器。
+                        基于 OpenCV “模板匹配法”的图像识别工具类，可通过 cocoapods 一键集成，快速使用。
                        DESC
   s.homepage         = 'https://github.com/muzipiao'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
