@@ -39,7 +39,6 @@
     [self.assetReader cancelReading];
     self.assetReader = nil;
     self.targetImage = nil;
-    [self.topVC dismissViewControllerAnimated:NO completion:nil];
     [super tearDown];
 }
 
@@ -58,6 +57,15 @@
     XCTAssertNotNil(OOBShare.markerLineColor, @"标记图像默认红色，不为空");
 }
 
+// 测试单例
+- (void)testShareOOB {
+    OOB *OOBShare = [OOB share];
+    OOB *OOBAlloc = [[OOB alloc]init];
+    OOB *OOBCopy = OOBShare.copy;
+    XCTAssertEqualObjects(OOBShare, OOBAlloc, @"Alloc 对象应该为单例");
+    XCTAssertEqualObjects(OOBShare, OOBCopy, @"Copy 对象应该为单例");
+}
+
 // 测试默认设置
 - (void)testDefaultOOB {
     // 测试视频流
@@ -68,6 +76,7 @@
 - (void)testUserSetOOB
 {
     UIViewController *targetVC = [[UIViewController alloc]init];
+    targetVC.view.backgroundColor = [UIColor whiteColor];
     [self.topVC presentViewController:targetVC animated:NO completion:nil];
     
     // 设置预览图层
@@ -130,6 +139,9 @@
                 NSLog(@"expectation1=%@",error);
             }
         }];
+        // 回到主页
+        UIViewController *presentedVC = self.topVC.presentedViewController;
+        [presentedVC dismissViewControllerAnimated:NO completion:nil];
         return;
     }
     
@@ -158,6 +170,9 @@
     CMSampleBufferRef samRef = [trackOutput copyNextSampleBuffer];
     SEL delegateSel = NSSelectorFromString(@"captureOutput:didOutputSampleBuffer:fromConnection:");
     ((void (*) (id, SEL, AVCaptureOutput *, CMSampleBufferRef, AVCaptureConnection *)) objc_msgSend) ([OOB share], delegateSel, nil, samRef, nil);
+    // 回到主页
+    UIViewController *presentedVC = self.topVC.presentedViewController;
+    [presentedVC dismissViewControllerAnimated:NO completion:nil];
 }
 
 @end

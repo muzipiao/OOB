@@ -8,7 +8,6 @@
 
 #import "OOBTemplateVC.h"
 #import "OOB.h"
-#import <objc/message.h>
 
 @interface OOBTemplateVC ()
 
