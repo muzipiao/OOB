@@ -34,8 +34,10 @@ typedef void (^ResultBlock) (CGRect, CGFloat);
 
 @interface OOBTemplate ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 
+// 当前识别类型，相机、视频或图片
 @property (nonatomic, assign) OOBTemplateType templateType;
-
+// 读取视频CMSampleBufferRef
+@property (nonatomic, strong) AVAssetReader *assetReader;
 // 预览视频图层(Preview the video layer)
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
 // 当前视频会话(current video session)
@@ -259,6 +261,72 @@ static OOBTemplate *instance;
     [self.session startRunning];
 }
 
+/**
+ * 识别视频中的目标，并返回目标在图片中的位置，实际相似度
+ @param targetImg 待识别的目标图像
+ @param vURL 视频文件 URL
+ @param resultBlock 识别结果，分别是目标位置和实际的相似度，视频当前帧图像
+ */
+- (void)matchVideo:(UIImage *)targetImg VideoURL:(NSURL *)vURL
+       resultBlock:(nullable void (^)(CGRect targetRect, CGFloat similarValue, CGImageRef currentFrame))resultBlock{
+    _templateType = OOBTemplateTypeVideo; // 标记为相机
+    self.targetImg = targetImg; // 移除Alpha通道
+    [self updateMarkerImage]; // 更新标记图像
+    if (self.assetReader) {
+        [self.assetReader cancelReading];
+    }
+    AVAsset *asset = [AVAsset assetWithURL:vURL];
+    // 配置AVAssetReader
+    NSArray *trackArray = [asset tracksWithMediaType:AVMediaTypeVideo];
+    if (trackArray.count == 0) {
+        OOBLog(@"视频地址错误：%@", vURL);
+        return;
+    }
+    AVAssetTrack *track = trackArray.firstObject;
+    AVAssetReader *tmpAssetReader = [[AVAssetReader alloc] initWithAsset:asset error:nil];
+    self.assetReader = tmpAssetReader;
+    // 设置输出格式 kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+    NSDictionary *readerOutputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                          [NSNumber numberWithUnsignedInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange],                                   kCVPixelBufferPixelFormatTypeKey,nil];
+    
+    AVAssetReaderTrackOutput *trackOutput = [[AVAssetReaderTrackOutput alloc] initWithTrack:track outputSettings:readerOutputSettings];
+    [tmpAssetReader addOutput:trackOutput];
+    // 开始读取 CMSampleBufferRef
+    [tmpAssetReader startReading];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        CGFloat frameTime = 0.035; // 读取速率
+        if (track.nominalFrameRate > 0) {
+            frameTime = 1.0/track.nominalFrameRate;
+        }
+        // 循环读取
+        while (tmpAssetReader.status == AVAssetReaderStatusReading && track.nominalFrameRate > 0) {
+            if (!self.assetReader) {
+                 break; // 停止播放
+            }
+            CMSampleBufferRef samBufRef = [trackOutput copyNextSampleBuffer];
+            if (!samBufRef) {
+                break;
+            }
+            CGImageRef frameRef = [OOBTemplateHelper imageFromSampleBuffer:samBufRef];
+            NSDictionary *tgDict = [OOBTemplateHelper locInVideo:samBufRef TemplateImg:targetImg SimilarValue:self.similarValue];
+            CGRect tgRect = CGRectFromString([tgDict objectForKey:kTargetRect]);
+            CGFloat realSimilarValue = [[tgDict objectForKey:kSimilarValue] floatValue];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (resultBlock) {
+                    resultBlock(tgRect, realSimilarValue, frameRef);
+                }
+                // 释放 CMSampleBufferRef
+                if (samBufRef) {
+                    CMSampleBufferInvalidate(samBufRef);
+                    CFRelease(samBufRef);
+                }
+            });
+            [NSThread sleepForTimeInterval:frameTime];
+        }
+        [tmpAssetReader cancelReading];
+    });
+}
+
 ///MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection{
@@ -450,8 +518,10 @@ static OOBTemplate *instance;
     
     // 释放 session
     [_session stopRunning];
+    [_assetReader cancelReading];
     [_previewLayer removeFromSuperlayer];
     _session = nil;
+    _assetReader = nil;
     // 释放内存
     _rectMarkerImage = nil;
     _ovalMarkerImage = nil;

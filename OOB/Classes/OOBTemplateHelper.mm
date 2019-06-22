@@ -19,9 +19,14 @@
 using namespace cv;
 
 @implementation OOBTemplateHelper
-// 全局变量
-static UIImage *globalTemplateImg = nil;
-static Mat globalTemplateMat;
+// 相机识别全局变量
+static UIImage *globalCameraTImg = nil;
+static Mat globalCameraTMat;
+// 视频识别全局变量
+static UIImage *globalVideoTImg = nil;
+static Mat globalVideoTMat;
+
+// 视频补齐宽度
 static CGFloat videoRenderWidth = 0;
 
 /**
@@ -32,7 +37,7 @@ static CGFloat videoRenderWidth = 0;
  @param similarValue 与视频图像对比的相似度(Similarity to video image comparison)
  @return 结果字典，包含目标坐标，相似度，视频的原始尺寸(result dictionary containing target coordinates, similarity, original size of the video)
  */
-+(NSDictionary *)locInCamera:(CMSampleBufferRef)sampleBuffer TemplateImg:(UIImage *)tImg SimilarValue:(CGFloat)similarValue{
++(nullable NSDictionary *)locInCamera:(CMSampleBufferRef)sampleBuffer TemplateImg:(UIImage *)tImg SimilarValue:(CGFloat)similarValue{
     // 视频图像矩阵
     Mat videoMat;
     videoMat = [self bufferToGrayMat:sampleBuffer];
@@ -55,26 +60,73 @@ static CGFloat videoRenderWidth = 0;
     cv::Size videoReSize = cv::Size(videoReCols,videoReRows);
     resize(videoMat, videoMat, videoReSize);
     // 待比较的图像
-    if (![tImg isEqual:globalTemplateImg] || globalTemplateMat.empty()) {
-        globalTemplateImg = tImg;
+    if (![tImg isEqual:globalCameraTImg] || globalCameraTMat.empty()) {
+        globalCameraTImg = tImg;
         Mat colorMat;
         UIImageToMat(tImg, colorMat);
-        cvtColor(colorMat, globalTemplateMat, CV_BGR2GRAY);
+        cvtColor(colorMat, globalCameraTMat, CV_BGR2GRAY);
     }
     
     //判断是否为空，为空直接返回
-    if (videoMat.empty() || globalTemplateMat.empty()) {
+    if (videoMat.empty() || globalCameraTMat.empty()) {
         OOBLog(@"图像矩阵为空");
         return tempDict;
     }
     // 目标可缩放范围
     NSArray *targetScaleArray = @[@(0.2),@(0.3),@(0.4),@(0.5)];
-    NSDictionary *compDict = [self compareInput:videoMat templateMat:globalTemplateMat SimilarValue:similarValue BgScale:videoScale TScale:targetScaleArray];
+    NSDictionary *compDict = [self compareInput:videoMat templateMat:globalCameraTMat SimilarValue:similarValue BgScale:videoScale TScale:targetScaleArray];
     
     NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:compDict];
     [resultDict setObject:NSStringFromCGSize(orginVideoSize) forKey:kVideoSize];
     [resultDict setObject:@(videoFillWidth) forKey:kVideoFillWidth];
     
+    return resultDict.copy;
+}
+
+/**
+ * 识别视频中的目标，并返回目标在图片中的位置，实际相似度
+ @param sampleBuffer 视频图像流
+ @param tImg 待识别的目标图像
+ @param similarValue 与视频图像对比的相似度
+ @return 结果字典，包含目标坐标，相似度，视频的原始尺寸
+ */
++ (nullable NSDictionary *)locInVideo:(CMSampleBufferRef)sampleBuffer TemplateImg:(UIImage *)tImg SimilarValue:(CGFloat)similarValue{
+    // 视频图像矩阵
+    Mat videoMat;
+    videoMat = [self bufferToGrayMat:sampleBuffer];
+    if (!sampleBuffer || !tImg || videoMat.empty()) {
+        OOBLog(@"视频或目标图像为空");
+        return nil;
+    }
+    // 将视频图像缩放
+    CGFloat orginVideoWidth = videoMat.cols;
+    CGFloat orginVideoHeight = videoMat.rows;
+    int videoReCols = 160; // 宽度固定为160
+    CGFloat videoScale = 160.0/orginVideoWidth;
+    int videoReRows = (int)((CGFloat)videoReCols * orginVideoHeight)/orginVideoWidth; // 保持宽高比
+    cv::Size videoReSize = cv::Size(videoReCols,videoReRows);
+    resize(videoMat, videoMat, videoReSize);
+    // 待比较的图像, 转为灰度图像
+    if (![tImg isEqual:globalVideoTImg] || globalVideoTMat.empty()) {
+        globalVideoTImg = tImg;
+        Mat colorMat;
+        UIImageToMat(tImg, colorMat);
+        cvtColor(colorMat, globalVideoTMat, CV_BGR2GRAY);
+    }
+    //判断是否为空，为空直接返回
+    if (globalVideoTMat.empty()) {
+        OOBLog(@"目标图像矩阵为空");
+        return nil;
+    }
+    // 目标可缩放范围
+    NSArray *targetScaleArray = @[@(0.2),@(0.3),@(0.4),@(0.5)];
+    NSDictionary *compDict = [self compareInput:videoMat templateMat:globalVideoTMat SimilarValue:similarValue BgScale:videoScale TScale:targetScaleArray];
+    
+    NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:compDict];
+    CGSize orginVideoSize = CGSizeMake(videoRenderWidth, videoMat.rows);
+    CGFloat videoFillWidth = videoMat.cols - videoRenderWidth;
+    [resultDict setObject:NSStringFromCGSize(orginVideoSize) forKey:kVideoSize];
+    [resultDict setObject:@(videoFillWidth) forKey:kVideoFillWidth];
     return resultDict.copy;
 }
 
@@ -88,7 +140,7 @@ static CGFloat videoRenderWidth = 0;
  @param tScaleArr 目标缩放比例范围(target scaling range)
  @return 对比结果，包含目标坐标，相似度(comparison result, including target coordinates, similarity)
  */
-+(NSDictionary *)compareInput:(Mat)inputMat templateMat:(Mat)tmpMat SimilarValue:(CGFloat)similarValue BgScale:(CGFloat)bgScale TScale:(NSArray *)tScaleArr{
++ (nullable NSDictionary *)compareInput:(Mat)inputMat templateMat:(Mat)tmpMat SimilarValue:(CGFloat)similarValue BgScale:(CGFloat)bgScale TScale:(NSArray *)tScaleArr{
     // 将待比较的图像缩放至视频宽度的 20% 至 50%
     int currentTmpWidth = 0; // 匹配的模板图像宽度
     int currentTmpHeight = 0; // 匹配的模板图像高度
@@ -146,7 +198,7 @@ static CGFloat videoRenderWidth = 0;
  @param sampleBuffer 视频流(video stream)
  @return OpenCV 可用的图像矩阵(OpenCV available image matrix)
  */
-+(Mat)bufferToGrayMat:(CMSampleBufferRef) sampleBuffer{
++ (Mat)bufferToGrayMat:(CMSampleBufferRef) sampleBuffer{
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
     if (format != kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
@@ -205,7 +257,7 @@ static CGFloat videoRenderWidth = 0;
  @param similarValue 要求的相似度
  @return 结果字典，包含目标坐标，相似度
  */
-+ (NSDictionary *)compareBgMat:(Mat)bgMat TargetMat:(Mat)tgMat SimilarValue:(CGFloat)similarValue{
++ (nullable NSDictionary *)compareBgMat:(Mat)bgMat TargetMat:(Mat)tgMat SimilarValue:(CGFloat)similarValue{
     int currentTgWidth = 0; // 匹配的模板图像宽度
     int currentTgHeight = 0; // 匹配的模板图像高度
     double maxVal = 0; // 相似度
@@ -270,11 +322,74 @@ static CGFloat videoRenderWidth = 0;
 }
 
 /**
+ * 将 YUV 格式视频流转为 CGImage
+ @param sampleBuffer YUV 格式视频流
+ @return 当前视频流的 CGImage
+ */
++ (nullable CGImageRef)imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer{
+    if (!sampleBuffer) {
+        return NULL;
+    }
+    // Get a CMSampleBuffer's Core Video image buffer for the media data
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    // Lock the base address of the pixel buffer
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    uint8_t *yBuffer = (uint8_t *)CVPixelBufferGetBaseAddressOfPlane(imageBuffer, 0);
+    size_t yPitch = CVPixelBufferGetBytesPerRowOfPlane(imageBuffer, 0);
+    uint8_t *cbCrBuffer = (uint8_t *)CVPixelBufferGetBaseAddressOfPlane(imageBuffer, 1);
+    size_t cbCrPitch = CVPixelBufferGetBytesPerRowOfPlane(imageBuffer, 1);
+    
+    int bytesPerPixel = 4;
+    uint8_t *rgbBuffer = (uint8_t *)malloc(width * height * bytesPerPixel);
+    // YUV 转 RGB
+    for(int y = 0; y < height; y++) {
+        uint8_t *rgbBufferLine = &rgbBuffer[y * width * bytesPerPixel];
+        uint8_t *yBufferLine = &yBuffer[y * yPitch];
+        uint8_t *cbCrBufferLine = &cbCrBuffer[(y >> 1) * cbCrPitch];
+        
+        for(int x = 0; x < width; x++) {
+            int16_t y = yBufferLine[x];
+            int16_t cb = cbCrBufferLine[x & ~1] - 128;
+            int16_t cr = cbCrBufferLine[x | 1] - 128;
+            
+            uint8_t *rgbOutput = &rgbBufferLine[x*bytesPerPixel];
+            
+            int16_t r = (int16_t)roundf( y + cr *  1.4 );
+            int16_t g = (int16_t)roundf( y + cb * -0.343 + cr * -0.711 );
+            int16_t b = (int16_t)roundf( y + cb *  1.765);
+            
+            rgbOutput[0] = 0xff;
+            rgbOutput[1] = b>255?255:(b<0?0:b);
+            rgbOutput[2] = g>255?255:(g<0?0:g);
+            rgbOutput[3] = r>255?255:(r<0?0:r);
+        }
+    }
+    // Create a device-dependent RGB color space
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    // Create a bitmap graphics context with the sample buffer data
+    CGContextRef context = CGBitmapContextCreate(rgbBuffer, width, height, 8,
+                                                 width * bytesPerPixel, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipLast);
+    //根据这个位图 context 中的像素创建一个 Quartz image 对象
+    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
+    // Unlock the pixel buffer
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+    
+    // Free up the context and color space
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+    free(rgbBuffer);
+    
+    return quartzImage;
+}
+
+/**
  * 将透明像素填充为白色，对其他像素无影响
  @param originImg 原图像
  @return 填充后的图像
  */
-+ (UIImage *)removeAlpha:(UIImage *)originImg{
++ (nullable UIImage *)removeAlpha:(UIImage *)originImg{
     CGSize tSize = originImg.size;
     CGRect tRect = CGRectMake(0, 0, tSize.width, tSize.height);
     UIGraphicsBeginImageContextWithOptions(tSize, NO, 0);

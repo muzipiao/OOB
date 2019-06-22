@@ -197,12 +197,12 @@
     }
     
     // 如果是模拟器
-    NSURL *url = [[NSBundle mainBundle] URLForResource:@"oob_apple.mp4" withExtension:nil];
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
     XCTAssertNotNil(url, @"待测视频不能为空");
     // 获取视频CMSampleBufferRef
-    AVAsset *asset = [AVAsset  assetWithURL:url];
+    AVAsset *asset = [AVAsset assetWithURL:url];
     // 1. 配置AVAssetReader
-    AVAssetTrack *track = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;;
+    AVAssetTrack *track = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     self.assetReader = [[AVAssetReader alloc] initWithAsset:asset error:nil];
     // 设置输出格式kCVPixelBufferWidthKey kCVPixelBufferHeightKey
     NSDictionary *readerOutputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:

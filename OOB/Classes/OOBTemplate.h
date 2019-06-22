@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)share;
 
 /**
- * 停止识别图像。如果调用摄像头，视图消失或销毁时必须手动执行此方法释放资源。
+ * 停止识别图像。如果调用摄像头或播放视频，必须手动执行此方法释放资源。
  */
 -(void)stopMatch;
 
@@ -35,6 +35,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)matchCamera:(UIImage *)targetImg
    resultBlock:(nullable void (^)(CGRect targetRect, CGFloat similarValue))resultBlock;
+
+/**
+ * 识别视频中的目标，并返回目标在图片中的位置，实际相似度
+ @param targetImg 待识别的目标图像
+ @param vURL 视频文件 URL
+ @param resultBlock 识别结果，分别是目标位置和实际的相似度，视频当前帧图像
+ */
+- (void)matchVideo:(UIImage *)targetImg VideoURL:(NSURL *)vURL
+        resultBlock:(nullable void (^)(CGRect targetRect, CGFloat similarValue, CGImageRef currentFrame))resultBlock;
 
 /**
  * 识别图片中的目标，并返回目标在图片中的位置，实际相似度

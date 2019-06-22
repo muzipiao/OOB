@@ -29,6 +29,7 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
     // 注意：视图销毁必须释放资源
     OOBLog(@"停止图像识别，必须 stopMatch 销毁 OOB");
     [[OOBTemplate share] stopMatch];
