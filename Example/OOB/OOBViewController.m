@@ -7,15 +7,20 @@
 //
 
 #import "OOBViewController.h"
-#import "OOBTemplateVC.h"
+#import "OOBTemplateImageVC.h" // 识别图像中的目标
+#import "OOBTemplateCameraVC.h" // 识别相机视频流中的目标
+#import "OOB.h"
 
 @interface OOBViewController ()
 
-// OOB 图像识别按钮
-@property (nonatomic, strong) UIButton *objRecoBtn;
+// OOB 摄像头图像识别
+@property (nonatomic, strong) UIButton *objCameraBtn;
+
+// OOB 图片图像识别
+@property (nonatomic, strong) UIButton *objImageBtn;
 
 // 图像列表
-@property (nonatomic, strong) NSArray *imgNameArray;
+@property (nonatomic, strong) NSArray<NSString *> *imgNameArray;
 
 // 待识别的图像
 @property (nonatomic, strong) UIImage *targetImage;
@@ -33,7 +38,21 @@
 
 -(void)createUI{
     self.navigationItem.title = @"iOS 图像识别";
-    [self.view addSubview:self.objRecoBtn];
+    CGFloat sw = [UIScreen mainScreen].bounds.size.width;
+    CGFloat sh = [UIScreen mainScreen].bounds.size.height;
+    
+    [self.view addSubview:self.objCameraBtn];
+    [self.view addSubview:self.objImageBtn];
+    
+    // 相似度标签
+    UILabel *tipLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
+    tipLabel.text = @"点击图片选择目标图像，点击下方按钮开始识别";
+    tipLabel.textAlignment = NSTextAlignmentCenter;
+    tipLabel.font = [UIFont systemFontOfSize:10];
+    [self.view addSubview:tipLabel];
+    [tipLabel sizeToFit];
+    CGFloat labelHeight = tipLabel.bounds.size.height;
+    tipLabel.frame = CGRectMake(0, 68, sw, labelHeight);
     
     // 默认是识别 apple 图片
     self.targetImage = [UIImage imageNamed:@"apple"];
@@ -43,11 +62,11 @@
     // 创建 6 个切换图片按钮
     CGFloat margin = 40;
     CGFloat btnH = 80;
-    CGFloat sw = [UIScreen mainScreen].bounds.size.width;
-    CGFloat sh = [UIScreen mainScreen].bounds.size.height;
     
-    self.objRecoBtn.frame = CGRectMake(margin, sh - margin - btnH, sw - margin * 2, btnH);
-   
+    CGFloat nextBtnW = (sw - margin * 3) * 0.5;
+    self.objCameraBtn.frame = CGRectMake(margin, sh - margin - btnH, nextBtnW, btnH);
+    self.objImageBtn.frame = CGRectMake(margin * 2 + nextBtnW, sh - margin - btnH, nextBtnW, btnH);
+    
     for (NSInteger i = 0; i < 6; i++) {
         if (self.imgNameArray.count <= i) {
             break;
@@ -62,7 +81,11 @@
         UIButton *tempBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *btnImg = [UIImage imageNamed:self.imgNameArray[i]];
         [tempBtn setImage:btnImg forState:UIControlStateNormal];
-        tempBtn.backgroundColor = [UIColor whiteColor];
+        if (i==0) {
+            tempBtn.backgroundColor = [UIColor lightGrayColor];
+        }else{
+            tempBtn.backgroundColor = [UIColor whiteColor];
+        }
         tempBtn.frame = CGRectMake(btnX, btnY, btnW, btnH);
         tempBtn.layer.cornerRadius = 15;
         tempBtn.layer.masksToBounds = YES;
@@ -88,31 +111,73 @@
 }
 
 
-// 跳转到图像识别
--(void)objRecoBtnClick:(UIButton *)sender{
-    OOBTemplateVC *vc = [[OOBTemplateVC alloc]init];
+// 摄像头图像识别
+-(void)objCameraBtnClick:(UIButton *)sender{
+    OOBTemplateCameraVC *vc = [[OOBTemplateCameraVC alloc]init];
     vc.targetImg = self.targetImage;
     [self presentViewController:vc animated:YES completion:^{
-        NSLog(@"跳转全屏的图像识别界面");
+        NSLog(@"跳转摄像头识别界面");
     }];
 }
 
+// 图片图像识别
+-(void)objImageBtnClick:(UIButton *)sender{
+    for (UIView *sub in self.view.subviews) {
+        if ([sub isKindOfClass:[UIButton class]] && sub.tag >= 1000) {
+            sub.backgroundColor = [UIColor whiteColor];
+        }
+    }
+    // 截取当前屏幕图片作为待识别的背景图
+    UIImage *bgImg = [self snapshotView:self.view];
+    OOBTemplateImageVC *imgVC = [[OOBTemplateImageVC alloc]init];
+    imgVC.targetImg = self.targetImage;
+    imgVC.bgImg = bgImg;
+    [self presentViewController:imgVC animated:YES completion:^{
+        NSLog(@"跳转图片识别界面");
+    }];
+    
+}
 
--(UIButton *)objRecoBtn{
-    if (_objRecoBtn == nil) {
+-(UIImage *)snapshotView:(UIView *)view{
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, YES, 0);
+    [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:YES];
+    UIImage *tempImg = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return tempImg;
+}
+
+-(UIButton *)objCameraBtn{
+    if (_objCameraBtn == nil) {
         UIButton *tempBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-        [tempBtn setTitle:@"点击按钮开始图像识别" forState:UIControlStateNormal];
+        [tempBtn setTitle:@"视频图像识别" forState:UIControlStateNormal];
         tempBtn.titleLabel.font = [UIFont systemFontOfSize:18];
         [tempBtn setBackgroundColor:[UIColor magentaColor]];
         tempBtn.tag = 1;
         [tempBtn sizeToFit];
         tempBtn.layer.cornerRadius = 15;
         tempBtn.layer.masksToBounds = YES;
-        [tempBtn addTarget:self action:@selector(objRecoBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        _objRecoBtn = tempBtn;
+        [tempBtn addTarget:self action:@selector(objCameraBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        _objCameraBtn = tempBtn;
     }
-    return _objRecoBtn;
+    return _objCameraBtn;
+}
+
+-(UIButton *)objImageBtn{
+    if (_objImageBtn == nil) {
+        UIButton *tempBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+        [tempBtn setTitle:@"图片图像识别" forState:UIControlStateNormal];
+        tempBtn.titleLabel.font = [UIFont systemFontOfSize:18];
+        [tempBtn setBackgroundColor:[UIColor magentaColor]];
+        tempBtn.tag = 1;
+        [tempBtn sizeToFit];
+        tempBtn.layer.cornerRadius = 15;
+        tempBtn.layer.masksToBounds = YES;
+        [tempBtn addTarget:self action:@selector(objImageBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        _objImageBtn = tempBtn;
+    }
+    return _objImageBtn;
 }
 
 
 @end
+

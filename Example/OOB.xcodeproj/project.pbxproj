@@ -22,10 +22,10 @@
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		618C8411AB41B7265053ECF9 /* libPods-OOB_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 33BC3380DF3F311A71198107 /* libPods-OOB_Example.a */; };
 		89E63661DBB3EF630E01FB3D /* libPods-OOB_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1393BA7607C513D41AF22CB9 /* libPods-OOB_Tests.a */; };
-		9C6F462622BB498600F415D9 /* OOBExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F462522BB498600F415D9 /* OOBExampleTests.m */; };
-		9C9560792232953600BE0DB9 /* OOBTemplateVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C9560782232953600BE0DB9 /* OOBTemplateVC.m */; };
 		9CDC108E22BA29CB0016201B /* oob_apple.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CDC108D22BA29CB0016201B /* oob_apple.mp4 */; };
 		9CDC109122BA3E070016201B /* oob_apple.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CDC108D22BA29CB0016201B /* oob_apple.mp4 */; };
+		AB63CF0422BDFC4400940C56 /* OOBTemplateCameraVC.m in Sources */ = {isa = PBXBuildFile; fileRef = AB63CF0222BDFC4400940C56 /* OOBTemplateCameraVC.m */; };
+		AB63CF0522BDFC4400940C56 /* OOBTemplateImageVC.m in Sources */ = {isa = PBXBuildFile; fileRef = AB63CF0322BDFC4400940C56 /* OOBTemplateImageVC.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,10 +66,11 @@
 		68D99656489EE3629A493883 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		741313919B99A4C0CACFA9DE /* OOB.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = OOB.podspec; path = ../OOB.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		8E91649B1AED61CB3F5B089E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		9C6F462522BB498600F415D9 /* OOBExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOBExampleTests.m; sourceTree = "<group>"; };
-		9C9560772232953600BE0DB9 /* OOBTemplateVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OOBTemplateVC.h; sourceTree = "<group>"; };
-		9C9560782232953600BE0DB9 /* OOBTemplateVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOBTemplateVC.m; sourceTree = "<group>"; };
 		9CDC108D22BA29CB0016201B /* oob_apple.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = oob_apple.mp4; sourceTree = "<group>"; };
+		AB63CF0022BDFC4400940C56 /* OOBTemplateImageVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOBTemplateImageVC.h; sourceTree = "<group>"; };
+		AB63CF0122BDFC4400940C56 /* OOBTemplateCameraVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOBTemplateCameraVC.h; sourceTree = "<group>"; };
+		AB63CF0222BDFC4400940C56 /* OOBTemplateCameraVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOBTemplateCameraVC.m; sourceTree = "<group>"; };
+		AB63CF0322BDFC4400940C56 /* OOBTemplateImageVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOBTemplateImageVC.m; sourceTree = "<group>"; };
 		C9F3B96B8A3BB78EF4D4E477 /* Pods-OOB_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OOB_Tests.release.xcconfig"; path = "Target Support Files/Pods-OOB_Tests/Pods-OOB_Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -140,8 +141,10 @@
 				6003F59D195388D20070C39A /* OOBAppDelegate.m */,
 				6003F5A5195388D20070C39A /* OOBViewController.h */,
 				6003F5A6195388D20070C39A /* OOBViewController.m */,
-				9C9560772232953600BE0DB9 /* OOBTemplateVC.h */,
-				9C9560782232953600BE0DB9 /* OOBTemplateVC.m */,
+				AB63CF0122BDFC4400940C56 /* OOBTemplateCameraVC.h */,
+				AB63CF0222BDFC4400940C56 /* OOBTemplateCameraVC.m */,
+				AB63CF0022BDFC4400940C56 /* OOBTemplateImageVC.h */,
+				AB63CF0322BDFC4400940C56 /* OOBTemplateImageVC.m */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
 			);
@@ -165,7 +168,6 @@
 			children = (
 				9CDC108D22BA29CB0016201B /* oob_apple.mp4 */,
 				6003F5BB195388D20070C39A /* Tests.m */,
-				9C6F462522BB498600F415D9 /* OOBExampleTests.m */,
 				6003F5B6195388D20070C39A /* Supporting Files */,
 			);
 			path = Tests;
@@ -356,8 +358,9 @@
 			files = (
 				6003F59E195388D20070C39A /* OOBAppDelegate.m in Sources */,
 				6003F5A7195388D20070C39A /* OOBViewController.m in Sources */,
+				AB63CF0522BDFC4400940C56 /* OOBTemplateImageVC.m in Sources */,
+				AB63CF0422BDFC4400940C56 /* OOBTemplateCameraVC.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
-				9C9560792232953600BE0DB9 /* OOBTemplateVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,7 +369,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F5BC195388D20070C39A /* Tests.m in Sources */,
-				9C6F462622BB498600F415D9 /* OOBExampleTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

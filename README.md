@@ -48,7 +48,7 @@ pod 'OOB'
 
 ```objc
 // 设置视频预览图层
-[OOB share].preview = self.view;
+[OOBTemplate share].preview = self.view;
 ```
 ### 调用图像识别
 
@@ -62,63 +62,62 @@ pod 'OOB'
 @param similarValue 目标模板与视频图像中图像的相似度
 @return 识别图像在block中回调
 */
-[[OOB share] matchTemplate:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-  OOBLog(@"相似度：%.0f %%，目标位置：Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
+[[OOBTemplate share] matchCamera:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+OOBLog(@"相似度：%.0f %%，目标位置：Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
 }];
 ```
 Block 回调会返回目标位置，和对比的相似度，Block 刷新频率和视频帧率相同。
 
 ### 结束图像识别
 
-识别任务结束，或当期视图销毁时，调用 `[[OOB share] stopMatch];` 释放资源即可。
+识别任务结束，或当期视图销毁时，调用 `[[OOBTemplate share] stopMatch];` 释放资源即可。
 
 ### 其他设置
 
 切换目标图像，可随时切换
 
 ```objc
-[OOB share].targetImage = [UIImage imageNamed:@"apple"];
+[OOBTemplate share].targetImage = [UIImage imageNamed:@"apple"];
 ```
 
 切换前置后置摄像头
 
 ```objc
 // 切换为后置摄像头
-[OOB share].cameraType = OOBCameraTypeBack;
+[OOBTemplate share].cameraType = OOBCameraTypeBack;
 // 切换为前置摄像头
-[OOB share].cameraType = OOBCameraTypeFront;
+[OOBTemplate share].cameraType = OOBCameraTypeFront;
 ```
 
 设置预览视频图像质量，默认预览视频尺寸 1920x1080
 
 ```objc
 // 设置视频预览质量为高
-[OOB share].sessionPreset = AVCaptureSessionPresetHigh;
+[OOBTemplate share].sessionPreset = AVCaptureSessionPresetHigh;
 // 设置视频预览尺寸为 640x480
-[OOB share].sessionPreset = AVCaptureSessionPreset640x480;
+[OOBTemplate share].sessionPreset = AVCaptureSessionPreset640x480;
 ```
 设置相似度阈值，默认是 0.7，最大为 1。值设置的越小误报率高，值设置的越大越难匹配。
 
 ```objc
 // 设置阈值为 0.8，识别更精确一些。
-[OOB share].similarValue = 0.8;
+[OOBTemplate share].similarValue = 0.8;
 ```
 
 生成一张标记目标的 UIImage 图片，自带一张矩形和一张圆形的标记图片。
 
 ```objc
 // 更改标记框框颜色为深红色：R=254 G=67 B=101
-[OOB share].markerLineColor =  [UIColor colorWithRed:254.0/255.0 green:67.0/255.0 blue:101.0/255.0 alpha:1.0];
+[OOBTemplate share].markerLineColor =  [UIColor colorWithRed:254.0/255.0 green:67.0/255.0 blue:101.0/255.0 alpha:1.0];
 // 更改标记框线宽为 8.0
-[OOB share].markerLineWidth = 8.0;
+[OOBTemplate share].markerLineWidth = 8.0;
 // 更改矩形框切圆角半径为 8.0
-[OOB share].markerCornerRadius = 8.0;
+[OOBTemplate share].markerCornerRadius = 8.0;
 // 生成一张矩形标记框
-UIImage *rectImage = [OOB share].rectMarkerImage;
+UIImage *rectImage = [OOBTemplate share].rectMarkerImage;
 // 生成一张椭圆标记框
-UIImage *ovalImage = [OOB share].ovalMarkerImage;
+UIImage *ovalImage = [OOBTemplate share].ovalMarkerImage;
 ```
-
 
 ## 其他
 

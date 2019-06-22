@@ -1,15 +1,15 @@
 //
-//  OOBTemplateVC.m
+//  OOBTemplateCameraVC.m
 //  OOB_Example
 //
 //  Created by lifei on 2019/3/8.
 //  Copyright © 2019 lifei. All rights reserved.
 // 模板匹配法识别图像
 
-#import "OOBTemplateVC.h"
+#import "OOBTemplateCameraVC.h"
 #import "OOB.h"
 
-@interface OOBTemplateVC ()
+@interface OOBTemplateCameraVC ()
 
 // 标记目标的图片框，用户可自定义
 @property (nonatomic, strong) UIImageView *markView;
@@ -19,7 +19,7 @@
 
 @end
 
-@implementation OOBTemplateVC
+@implementation OOBTemplateCameraVC
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -31,7 +31,7 @@
 - (void)viewDidDisappear:(BOOL)animated{
     // 注意：视图销毁必须释放资源
     OOBLog(@"停止图像识别，必须 stopMatch 销毁 OOB");
-    [[OOB share] stopMatch];
+    [[OOBTemplate share] stopMatch];
 }
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
@@ -48,7 +48,7 @@
     UIImageView *markerImgView = [[UIImageView alloc]initWithImage:nil];
     [self.view addSubview:markerImgView];
     self.markView = markerImgView;
-    self.markView.image = [OOB share].rectMarkerImage; // 设置标记图像为矩形
+    self.markView.image = [OOBTemplate share].rectMarkerImage; // 设置标记图像为矩形
     markerImgView.hidden = YES;
     
     // 相似度标签
@@ -73,7 +73,7 @@
  */
 -(void)startReco{
     // 设置视频预览图层
-    [OOB share].preview = self.view;
+    [OOBTemplate share].preview = self.view;
     
     /**
      * 开始图像识别
@@ -82,10 +82,10 @@
      @param similarValue 目标模板与视频图像中图像的相似度
      @return 识别图像在block中回调
      */
-    [[OOB share] matchTemplate:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+    [[OOBTemplate share] matchCamera:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
         OOBLog(@"模板图像与视频目标的相似度：%.0f %%,Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
         self.similarLabel.text = [NSString stringWithFormat:@"与目标相似度：%.0f %%",similarValue * 100];
-        // 只有当相似度大于 80% 时才标记，否则不标记
+        // 只有当相似度大于 70% 时才标记，否则不标记
         if (similarValue > 0.7) {
             self.markView.hidden = NO;
             self.markView.frame = targetRect;
@@ -101,16 +101,16 @@
  */
 -(void)optionalProperty{
     // 更改矩形框颜色为深红色：R=254 G=67 B=101
-    [OOB share].markerLineColor =  [UIColor colorWithRed:254.0/255.0 green:67.0/255.0 blue:101.0/255.0 alpha:1.0];
+    [OOBTemplate share].markerLineColor =  [UIColor colorWithRed:254.0/255.0 green:67.0/255.0 blue:101.0/255.0 alpha:1.0];
     // 更改矩形框线宽为 8.0
-    [OOB share].markerLineWidth = 8.0;
+    [OOBTemplate share].markerLineWidth = 8.0;
     // 更改矩形框切圆角半径为 8.0
-    [OOB share].markerCornerRadius = 8.0;
+    [OOBTemplate share].markerCornerRadius = 8.0;
     // 图像改变后必须重新设置Imageview的图像
-    self.markView.image = [OOB share].rectMarkerImage;
+    self.markView.image = [OOBTemplate share].rectMarkerImage;
     
     // 调整对比的相似度为 80%
-    [OOB share].similarValue = 0.8;
+    [OOBTemplate share].similarValue = 0.8;
 }
 
 @end

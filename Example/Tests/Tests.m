@@ -35,7 +35,7 @@
 
 - (void)tearDown
 {
-    [[OOB share] stopMatch];
+    [[OOBTemplate share] stopMatch];
     [self.assetReader cancelReading];
     self.assetReader = nil;
     self.targetImage = nil;
@@ -43,7 +43,7 @@
 }
 
 - (void)testInitialize{
-    OOB *OOBShare = [OOB share];
+    OOBTemplate *OOBShare = [OOBTemplate share];
     XCTAssertNil(OOBShare.preview, @"预览图层默认为空");
     XCTAssertNotNil(self.targetImage, @"待识别图像不为空");
     XCTAssertNotNil(self.topVC, @"当前控制器不为空");
@@ -59,28 +59,58 @@
 
 // 测试单例
 - (void)testShareOOB {
-    OOB *OOBShare = [OOB share];
-    OOB *OOBAlloc = [[OOB alloc]init];
-    OOB *OOBCopy = OOBShare.copy;
+    OOBTemplate *OOBShare = [OOBTemplate share];
+    OOBTemplate *OOBAlloc = [[OOBTemplate alloc]init];
+    OOBTemplate *OOBCopy = OOBShare.copy;
     XCTAssertEqualObjects(OOBShare, OOBAlloc, @"Alloc 对象应该为单例");
     XCTAssertEqualObjects(OOBShare, OOBCopy, @"Copy 对象应该为单例");
 }
 
-// 测试默认设置
-- (void)testDefaultOOB {
+// 测试图片中识别目标
+- (void)testMatchImg {
+    // screen_shot
+    UIImage *bgImg = [UIImage imageNamed:@"screen_shot"];
+    XCTAssertTrue(bgImg, @"背景图像不为空");
+    XCTAssertTrue(self.targetImage, @"待识别图像不为空");
+    [OOBTemplate matchImage:self.targetImage BgImg:bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        XCTAssertTrue(similarValue > 0.5, @"相似度在 0 到 1 之间。");
+        XCTAssertTrue(targetRect.size.width > 0, @"目标宽度大于 0。");
+        XCTAssertTrue(targetRect.size.height > 0, @"目标高度大于 0。");
+    }];
+    // 测试图片为空
+    UIImage *noImg = nil;
+    [OOBTemplate matchImage:noImg BgImg:bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        XCTAssertTrue(similarValue == 0, @"图片为空，相似度为 0。");
+        XCTAssertTrue(CGRectEqualToRect(targetRect, CGRectZero), @"图片为空，Frame 为空");
+    }];
+    // 测试大图片 screen_shot
+    [OOBTemplate matchImage:bgImg BgImg:bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        XCTAssertTrue(similarValue > 0, @"相似度在 0 到 1 之间。");
+    }];
+    
+    // 阈值超限
+    [OOBTemplate matchImage:self.targetImage BgImg:bgImg Similar:1.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        XCTAssertTrue(similarValue > 0.5, @"相似度在 0 到 1 之间。");
+        XCTAssertTrue(targetRect.size.width > 0, @"目标宽度大于 0。");
+        XCTAssertTrue(targetRect.size.height > 0, @"目标高度大于 0。");
+    }];
+}
+
+// 测试相机默认设置
+- (void)testDefaultMatchCamera {
     // 测试视频流
     [self samRefTest];
 }
 
-// 测试用户自定义设置
-- (void)testUserSetOOB
+// 测试相机用户自定义设置
+- (void)testUserSetMatchCamera
 {
     UIViewController *targetVC = [[UIViewController alloc]init];
     targetVC.view.backgroundColor = [UIColor whiteColor];
     [self.topVC presentViewController:targetVC animated:NO completion:nil];
     
     // 设置预览图层
-    OOB *OOBShare = [OOB share];
+    OOBTemplate *OOBShare = [OOBTemplate share];
     OOBShare.preview = targetVC.view;
     XCTAssertEqual(OOBShare.preview, targetVC.view, @"设置预览图层");
     
@@ -120,13 +150,34 @@
     [self samRefTest];
 }
 
+// 测试视频的异常情况
+- (void)testExceptionMatchCamera{
+    UIViewController *targetVC = [[UIViewController alloc]init];
+    targetVC.view.backgroundColor = [UIColor whiteColor];
+    [self.topVC presentViewController:targetVC animated:NO completion:nil];
+    
+    // 设置预览图层为空
+    OOBTemplate *OOBShare = [OOBTemplate share];
+    
+    // 更换目标视图为空
+    UIImage *tImg = [UIImage imageNamed:@"1235666"];
+    OOBShare.targetImg = tImg;
+    XCTAssertNil(OOBShare.targetImg, @"目标图像为空");
+    
+    // 设置相似度超限
+    OOBShare.similarValue = 1.9;
+    
+    // 测试视频流
+    [self samRefTest];
+}
+
 -(void)samRefTest{
     // 如果是真机
     if (TARGET_OS_SIMULATOR != 1) {
         // 设置变量后测试
         NSDate *beginDate1 = [NSDate date];
         XCTestExpectation *expectation1 = [self expectationWithDescription:@"Camer should not open."];
-        [[OOB share] matchTemplate:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        [[OOBTemplate share] matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
             BOOL similarValueNormal = (similarValue >= 0) && (similarValue <= 1);
             XCTAssertTrue(similarValueNormal, @"相似度在 0 到 1 之间。");
             NSTimeInterval timeDiff = [[NSDate date] timeIntervalSinceDate:beginDate1];
@@ -162,18 +213,19 @@
     // 开始读取 CMSampleBufferRef
     [self.assetReader startReading];
     // 定义回调 block
-    [[OOB share] matchTemplate:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+    [[OOBTemplate share] matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
         BOOL similarValueNormal = (similarValue >= 0.5) && (similarValue <= 1);
         XCTAssertTrue(similarValueNormal, @"相似度在 0 到 1 之间。");
     }];
     
     CMSampleBufferRef samRef = [trackOutput copyNextSampleBuffer];
     SEL delegateSel = NSSelectorFromString(@"captureOutput:didOutputSampleBuffer:fromConnection:");
-    ((void (*) (id, SEL, AVCaptureOutput *, CMSampleBufferRef, AVCaptureConnection *)) objc_msgSend) ([OOB share], delegateSel, nil, samRef, nil);
+    ((void (*) (id, SEL, AVCaptureOutput *, CMSampleBufferRef, AVCaptureConnection *)) objc_msgSend) ([OOBTemplate share], delegateSel, nil, samRef, nil);
     // 回到主页
     UIViewController *presentedVC = self.topVC.presentedViewController;
     [presentedVC dismissViewControllerAnimated:NO completion:nil];
 }
 
 @end
+
 
