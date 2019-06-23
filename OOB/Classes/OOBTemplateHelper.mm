@@ -98,6 +98,9 @@ static CGFloat videoRenderWidth = 0;
         OOBLog(@"视频或目标图像为空");
         return nil;
     }
+    // 储存原始尺寸
+    CGSize orginVideoSize = CGSizeMake(videoRenderWidth, videoMat.rows);
+    CGFloat videoFillWidth = videoMat.cols - videoRenderWidth;
     // 将视频图像缩放
     CGFloat orginVideoWidth = videoMat.cols;
     CGFloat orginVideoHeight = videoMat.rows;
@@ -123,8 +126,6 @@ static CGFloat videoRenderWidth = 0;
     NSDictionary *compDict = [self compareInput:videoMat templateMat:globalVideoTMat SimilarValue:similarValue BgScale:videoScale TScale:targetScaleArray];
     
     NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:compDict];
-    CGSize orginVideoSize = CGSizeMake(videoRenderWidth, videoMat.rows);
-    CGFloat videoFillWidth = videoMat.cols - videoRenderWidth;
     [resultDict setObject:NSStringFromCGSize(orginVideoSize) forKey:kVideoSize];
     [resultDict setObject:@(videoFillWidth) forKey:kVideoFillWidth];
     return resultDict.copy;

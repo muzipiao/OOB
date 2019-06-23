@@ -100,6 +100,7 @@ static BOOL kDoing = NO; // 防止暴力连续点击
      * similarValue 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
      */
     [[OOBTemplate share] matchVideo:self.targetImg VideoURL:vdUrl resultBlock:^(CGRect targetRect, CGFloat similarValue, CGImageRef  _Nonnull currentFrame) {
+        self.similarLabel.text = [NSString stringWithFormat:@"相似度：%.0f %%",similarValue * 100];
         /**
          * 显示返回的视频图像，载体视图和视频图像宽度不同会变形，需要矫正
          */
