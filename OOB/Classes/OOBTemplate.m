@@ -308,7 +308,7 @@ static OOBTemplate *instance;
                 break;
             }
             CGImageRef frameRef = [OOBTemplateHelper imageFromSampleBuffer:samBufRef];
-            NSDictionary *tgDict = [OOBTemplateHelper locInVideo:samBufRef TemplateImg:targetImg SimilarValue:self.similarValue];
+            NSDictionary *tgDict = [OOBTemplateHelper locInVideo:samBufRef TemplateImg:self.targetImg SimilarValue:self.similarValue];
             CGRect tgRect = CGRectFromString([tgDict objectForKey:kTargetRect]);
             CGFloat realSimilarValue = [[tgDict objectForKey:kSimilarValue] floatValue];
             dispatch_async(dispatch_get_main_queue(), ^{
