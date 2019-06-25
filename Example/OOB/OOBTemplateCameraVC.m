@@ -87,7 +87,7 @@
         OOBLog(@"模板图像与视频目标的相似度：%.0f %%,Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
         self.similarLabel.text = [NSString stringWithFormat:@"与目标相似度：%.0f %%",similarValue * 100];
         // 只有当相似度大于 70% 时才标记，否则不标记
-        if (similarValue > 0.7) {
+        if (similarValue > 0.8) {
             self.markView.hidden = NO;
             self.markView.frame = targetRect;
         }else{

@@ -9,6 +9,10 @@
 #import "OOBTemplate.h"
 #import "OOBTemplateHelper.h"
 
+#define kDefaultSimilarValue 0.7
+#define kDefaultRadiusValue  5.0
+
+
 /**
  * 当前识别类型
  */
@@ -85,9 +89,9 @@ static OOBTemplate *instance;
         _sessionPreset = AVCaptureSessionPresetHigh; // 默认视频图像尺寸 1920x1080
         _cameraType = OOBCameraTypeBack; // 默认后置摄像头
         _markerLineColor = [UIColor redColor]; // 标记图像默认是红色
-        _markerCornerRadius = 5.0f; // 如果是矩形，默认切圆角半径
-        _markerLineWidth = 5.0f; // 标记图像线宽默认是 1.0
-        _similarValue = 0.7f; // 相似度阈值
+        _markerCornerRadius = kDefaultRadiusValue; // 如果是矩形，默认切圆角半径
+        _markerLineWidth = kDefaultRadiusValue; // 标记图像线宽默认是 1.0
+        _similarValue = kDefaultSimilarValue; // 相似度阈值
     }
     return self;
 }
@@ -102,7 +106,7 @@ static OOBTemplate *instance;
  */
 + (void)matchImage:(UIImage *)targetImg BgImg:(UIImage *)backgroudImg Similar:(CGFloat)minSimilarValue resultBlock:(void (^)(CGRect, CGFloat))resultBlock{
     if (minSimilarValue > 1 || minSimilarValue < 0) {
-        minSimilarValue = 0.7; // 取默认值
+        minSimilarValue = kDefaultSimilarValue; // 取默认值
     }
     NSDictionary *targetDict = [OOBTemplateHelper locInImg:backgroudImg TargetImg:targetImg SimilarValue:minSimilarValue];
     CGRect targetRect = CGRectFromString([targetDict objectForKey:kTargetRect]);
@@ -120,6 +124,13 @@ static OOBTemplate *instance;
 }
 
 ///MARK: - 重写 Setter
+
+-(void)setSimilarValue:(CGFloat)similarValue{
+    _similarValue = similarValue;
+    if (similarValue > 1 || similarValue < 0) {
+        _similarValue = 0.7;
+    }
+}
 
 -(void)setCameraType:(OOBCameraType)cameraType{
     _cameraType = cameraType;
@@ -337,26 +348,21 @@ static OOBTemplate *instance;
 ///MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection{
-    if (self.similarValue > 1 || self.similarValue < 0) {
-        self.similarValue = 0.7; // 取默认值
-    }
-    NSDictionary *targetDict = [OOBTemplateHelper locInCamera:sampleBuffer TemplateImg:self.targetImg SimilarValue:self.similarValue];
+    // 识别相机图像
+    NSDictionary *targetDict = [OOBTemplateHelper locInVideo:sampleBuffer TemplateImg:self.targetImg SimilarValue:self.similarValue];
     CGRect targetRect = CGRectFromString([targetDict objectForKey:kTargetRect]);
     CGFloat similarValue = [[targetDict objectForKey:kSimilarValue] floatValue];
     CGSize videoSize = CGSizeFromString([targetDict objectForKey:kVideoSize]);
     // 将图像字节对齐造成的误差修正
     CGFloat videoFillWidth =  [[targetDict objectForKey:kVideoFillWidth] floatValue];
+    if (!targetDict || CGRectIsEmpty(targetRect)) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         // 目标坐标转换到缩放图像上的坐标
         CGSize viewSize = self.previewLayer.bounds.size;
         if (CGRectIsEmpty(self.previewLayer.frame)) {
             viewSize = [UIScreen mainScreen].bounds.size;
-        }
-        if (CGRectIsEmpty(targetRect)) {
-            if (self.resultBlock) {
-                self.resultBlock(CGRectZero, similarValue);
-            }
-            return;
         }
         // 视频默认根据 UIViewContentModeScaleAspectFill 模式进行缩放裁剪
         CGFloat scaleValueX = viewSize.width / videoSize.width;
@@ -519,9 +525,9 @@ static OOBTemplate *instance;
     _sessionPreset = AVCaptureSessionPresetHigh; // 默认视频图像尺寸 1920x1080
     _cameraType = OOBCameraTypeBack; // 默认后置摄像头
     _markerLineColor = [UIColor redColor]; // 标记图像默认是红色
-    _markerCornerRadius = 5.0f; // 如果是矩形，默认切圆角半径
-    _markerLineWidth = 5.0f; // 标记图像线宽默认是 1.0
-    _similarValue = 0.7f; // 相似度阈值
+    _markerCornerRadius = kDefaultRadiusValue; // 如果是矩形，默认切圆角半径
+    _markerLineWidth = kDefaultRadiusValue; // 标记图像线宽默认是 1.0
+    _similarValue = kDefaultSimilarValue; // 相似度阈值
     
     // 释放 session
     [_session stopRunning];

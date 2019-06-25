@@ -40,15 +40,13 @@
     CGFloat sw = [UIScreen mainScreen].bounds.size.width;
     CGFloat sh = [UIScreen mainScreen].bounds.size.height;
     
-    CGFloat vdW = sw - 40;
-    CGFloat vdH = sh - 100;
-    UIView *vdView = [[UIView alloc]initWithFrame:CGRectMake(20, 80, vdW, vdH)];
-    vdView.backgroundColor = [UIColor lightGrayColor];
-    [self.view addSubview:vdView];
-    self.videoView = vdView;
+    // 显示视频的view 图层
+    [self.view addSubview:self.videoView];
+    self.videoView.frame = CGRectMake(20, 80, sw - 40, sh - 100);
     
-    // 标记图片在背景 UIImageView 中
-    [vdView addSubview:self.markView];
+    // 标记图片在背景 videoView 中
+    [self.videoView addSubview:self.markView];
+    
     // 相似度标签
     [self.view addSubview:self.similarLabel];
     CGFloat labelHeight = self.similarLabel.bounds.size.height;
@@ -110,11 +108,8 @@ static BOOL kDoing = NO; // 防止暴力连续点击
 }
 
 ///MARK: - Lazy Load
-
-// 返回按钮
 -(UIButton *)backBtn{
     if (!_backBtn) {
-        // 范围按钮
         UIButton *tempBtn = [UIButton buttonWithType:UIButtonTypeSystem];
         [tempBtn setTitle:@"返回主页" forState:UIControlStateNormal];
         [tempBtn addTarget:self action:@selector(backBtnClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -136,6 +131,7 @@ static BOOL kDoing = NO; // 防止暴力连续点击
     return _markView;
 }
 
+// 相似度标签
 -(UILabel *)similarLabel{
     if (!_similarLabel) {
         UILabel *simLabel = [[UILabel alloc]init];
@@ -146,6 +142,16 @@ static BOOL kDoing = NO; // 防止暴力连续点击
         _similarLabel = simLabel;
     }
     return _similarLabel;
+}
+
+// 显示视频的图层
+-(UIView *)videoView{
+    if (!_videoView) {
+        UIView *vdView = [[UIView alloc]initWithFrame:CGRectZero];
+        vdView.backgroundColor = [UIColor lightGrayColor];
+        _videoView = vdView;
+    }
+    return _videoView;
 }
 
 @end

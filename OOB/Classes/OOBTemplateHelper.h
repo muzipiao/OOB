@@ -15,16 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OOBTemplateHelper : NSObject
 
 /**
- * 识别目标图像并返回目标坐标，相似度，视频的原始尺寸
- * Identify the target image and return the target coordinates, similarity, the original size of the video
- @param sampleBuffer 视频图像流(sampleBuffer video image stream)
- @param tImg 待识别的目标图像(target image to be recognized)
- @param similarValue 与视频图像对比的相似度(Similarity to video image comparison)
- @return 结果字典，包含目标坐标，相似度，视频的原始尺寸(result dictionary containing target coordinates, similarity, original size of the video)
- */
-+ (nullable NSDictionary *)locInCamera:(CMSampleBufferRef)sampleBuffer TemplateImg:(UIImage *)tImg SimilarValue:(CGFloat)similarValue;
-
-/**
  * 识别视频中的目标，并返回目标在图片中的位置，实际相似度
  @param sampleBuffer 视频图像流
  @param tImg 待识别的目标图像
