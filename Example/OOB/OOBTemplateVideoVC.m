@@ -48,7 +48,7 @@
     self.videoView = vdView;
     
     // 标记图片在背景 UIImageView 中
-    [self.view addSubview:self.markView];
+    [vdView addSubview:self.markView];
     // 相似度标签
     [self.view addSubview:self.similarLabel];
     CGFloat labelHeight = self.similarLabel.bounds.size.height;
@@ -82,6 +82,7 @@ static BOOL kDoing = NO; // 防止暴力连续点击
      * targetRect 目标在背景图片中的位置，注意不是 UImageView 中的实际位置，需要缩放转换
      * similarValue 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
      */
+    [OOBTemplate share].similarValue = 0.8;
     [[OOBTemplate share] matchVideo:self.targetImg VideoURL:vdUrl resultBlock:^(CGRect targetRect, CGFloat similarValue, CGImageRef  _Nonnull currentFrame) {
         self.similarLabel.text = [NSString stringWithFormat:@"相似度：%.0f %%",similarValue * 100];
         /**
@@ -97,7 +98,7 @@ static BOOL kDoing = NO; // 防止暴力连续点击
         CGFloat tgY = targetRect.origin.y * scaleY;
         CGFloat tgW = targetRect.size.width * scaleX;
         CGFloat tgH = targetRect.size.height * scaleY;
-        if (similarValue > 0.7) {
+        if (similarValue > 0.8) {
             self.markView.frame = CGRectMake(tgX, tgY, tgW, tgH);
             self.markView.hidden = NO;
         }else{

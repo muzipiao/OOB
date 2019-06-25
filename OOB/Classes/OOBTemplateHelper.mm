@@ -101,14 +101,7 @@ static CGFloat videoRenderWidth = 0;
     // 储存原始尺寸
     CGSize orginVideoSize = CGSizeMake(videoRenderWidth, videoMat.rows);
     CGFloat videoFillWidth = videoMat.cols - videoRenderWidth;
-    // 将视频图像缩放
-    CGFloat orginVideoWidth = videoMat.cols;
-    CGFloat orginVideoHeight = videoMat.rows;
-    int videoReCols = 160; // 宽度固定为160
-    CGFloat videoScale = 160.0/orginVideoWidth;
-    int videoReRows = (int)((CGFloat)videoReCols * orginVideoHeight)/orginVideoWidth; // 保持宽高比
-    cv::Size videoReSize = cv::Size(videoReCols,videoReRows);
-    resize(videoMat, videoMat, videoReSize);
+    
     // 待比较的图像, 转为灰度图像
     if (![tImg isEqual:globalVideoTImg] || globalVideoTMat.empty()) {
         globalVideoTImg = tImg;
@@ -121,9 +114,7 @@ static CGFloat videoRenderWidth = 0;
         OOBLog(@"目标图像矩阵为空");
         return nil;
     }
-    // 目标可缩放范围
-    NSArray *targetScaleArray = @[@(0.2),@(0.3),@(0.4),@(0.5)];
-    NSDictionary *compDict = [self compareInput:videoMat templateMat:globalVideoTMat SimilarValue:similarValue BgScale:videoScale TScale:targetScaleArray];
+    NSDictionary *compDict = [self compareBgMat:videoMat TargetMat:globalVideoTMat SimilarValue:similarValue];
     
     NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:compDict];
     [resultDict setObject:NSStringFromCGSize(orginVideoSize) forKey:kVideoSize];
@@ -168,7 +159,7 @@ static CGFloat videoRenderWidth = 0;
         matchTemplate(inputMat, tmpReMat, resultMat, TM_CCOEFF_NORMED);
         
         double minVal_temp, maxVal_temp;
-        cv::Point minLoc_temp, maxLoc_temp, matchLoc_temp;
+        cv::Point minLoc_temp, maxLoc_temp;
         minMaxLoc( resultMat, &minVal_temp, &maxVal_temp, &minLoc_temp, &maxLoc_temp, Mat());
         maxVal = maxVal_temp;
         if (maxVal >= similarValue) {
@@ -258,31 +249,44 @@ static CGFloat videoRenderWidth = 0;
  @param similarValue 要求的相似度
  @return 结果字典，包含目标坐标，相似度
  */
+static CGFloat scaleMid = 0.5; // 缩放，将目标图像从 0.5 倍背景图像尺寸，向两边缩放，先减后加。
 + (nullable NSDictionary *)compareBgMat:(Mat)bgMat TargetMat:(Mat)tgMat SimilarValue:(CGFloat)similarValue{
+    // 将大图像缩放为小图
+    CGFloat orginBgW = bgMat.cols;
+    CGFloat orginBgH = bgMat.rows;
+    int reBgCols = 160; // 宽度固定为160像素
+    CGFloat reBgScale = orginBgW/160.0;
+    // 保持大图宽高比
+    int reBgRows = (int)((CGFloat)reBgCols * orginBgH)/orginBgW;
+    cv::Size reBgSize = cv::Size(reBgCols,reBgRows);
+    resize(bgMat, bgMat, reBgSize);
+    
     int currentTgWidth = 0; // 匹配的模板图像宽度
     int currentTgHeight = 0; // 匹配的模板图像高度
     double maxVal = 0; // 相似度
     cv::Point maxLoc; // 匹配的位置
-    // 缩放，将目标图像从 0.5 倍背景图像尺寸，向两边缩放，先减去后加。
-    CGFloat mid = 0.5;
     // 缩放的尺度，要求精度越高，则每次缩放越小
     CGFloat subValue = (1.1 - similarValue) * 0.1;
-    CGFloat sign = -1;
+    CGFloat scaleSign = -1; // 放大缩小标记
+    scaleMid += subValue; // 从上次匹配的值开始
+    if (scaleMid >= 1 || scaleMid <= 0.1) {
+        scaleMid = 0.5; // 超限重置
+    }
     do {
-        if (mid >= 1) {
+        if (scaleMid >= 1) {
             break;
         }
         // 向下遍历不到，则向上遍历，放大
-        if (mid <= 0.1) {
-            mid = 0.5;
-            sign = 1;
+        if (scaleMid <= 0.1) {
+            scaleMid = 0.5;
+            scaleSign = 1;
         }
-        mid += (subValue * sign);
+        scaleMid += (subValue * scaleSign);
         // 计算缩放后的尺寸
-        CGFloat reTgCols = bgMat.cols * mid;
+        CGFloat reTgCols = bgMat.cols * scaleMid;
         CGFloat reTgRows = (reTgCols * tgMat.rows) / tgMat.cols;
         if (reTgCols >= bgMat.cols || reTgRows >= bgMat.rows) {
-            if (sign == 1) {
+            if (scaleSign == 1) {
                 break; // 如果是放大，结束，没必要再放大
             }else{
                 continue; // 如果是缩小，则继续
@@ -301,7 +305,7 @@ static CGFloat videoRenderWidth = 0;
         Mat resultMat = Mat(result_cols,result_rows,CV_32FC1);
         matchTemplate(bgMat, reTgMat, resultMat, TM_CCOEFF_NORMED);
         double minVal_temp, maxVal_temp;
-        cv::Point minLoc_temp, maxLoc_temp, matchLoc_temp;
+        cv::Point minLoc_temp, maxLoc_temp;
         minMaxLoc( resultMat, &minVal_temp, &maxVal_temp, &minLoc_temp, &maxLoc_temp, Mat());
         // 储存最大值
         if (maxVal_temp > maxVal) {
@@ -314,9 +318,8 @@ static CGFloat videoRenderWidth = 0;
             break;
         }
     } while (TRUE);
-    // 目标图像按照屏幕缩放比例恢复
-    CGFloat zoomScale = 1.0 / [UIScreen mainScreen].scale;
-    CGRect rectF = CGRectMake(maxLoc.x * zoomScale, maxLoc.y * zoomScale, currentTgWidth * zoomScale, currentTgHeight * zoomScale);
+    // 将作为恢复为背景大图的坐标
+    CGRect rectF = CGRectMake(maxLoc.x * reBgScale, maxLoc.y * reBgScale, currentTgWidth * reBgScale, currentTgHeight * reBgScale);
     NSDictionary *tempDict = @{kTargetRect:NSStringFromCGRect(rectF),
                                kSimilarValue:@(maxVal)};
     return tempDict;

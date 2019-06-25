@@ -106,9 +106,16 @@ static OOBTemplate *instance;
     }
     NSDictionary *targetDict = [OOBTemplateHelper locInImg:backgroudImg TargetImg:targetImg SimilarValue:minSimilarValue];
     CGRect targetRect = CGRectFromString([targetDict objectForKey:kTargetRect]);
+    // 根据背景视图的 Scale 将像素变换为苹果坐标系
+    CGFloat bgScale = backgroudImg.scale;
+    CGFloat tgX = targetRect.origin.x / bgScale;
+    CGFloat tgY = targetRect.origin.y / bgScale;
+    CGFloat tgW = targetRect.size.width / bgScale;
+    CGFloat tgH = targetRect.size.height / bgScale;
+    CGRect scaleRect = CGRectMake(tgX, tgY, tgW, tgH);
     CGFloat similarValue = [[targetDict objectForKey:kSimilarValue] floatValue];
     if (resultBlock) {
-        resultBlock(targetRect, similarValue);
+        resultBlock(scaleRect, similarValue);
     }
 }
 
