@@ -165,8 +165,9 @@
     if (_objCameraBtn == nil) {
         UIButton *tempBtn = [UIButton buttonWithType:UIButtonTypeSystem];
         [tempBtn setTitle:@"视频目标识别" forState:UIControlStateNormal];
-        tempBtn.titleLabel.font = [UIFont systemFontOfSize:11];
-        [tempBtn setBackgroundColor:[UIColor magentaColor]];
+        tempBtn.titleLabel.font = [UIFont systemFontOfSize:13];
+        [tempBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [tempBtn setBackgroundColor:[UIColor colorWithRed:0.0/255.0 green:199.0/255.0 blue:140.0/255.0 alpha:1.0]];
         tempBtn.tag = 1;
         [tempBtn sizeToFit];
         tempBtn.layer.cornerRadius = 5;
@@ -181,8 +182,9 @@
     if (_objVideoBtn == nil) {
         UIButton *tempBtn = [UIButton buttonWithType:UIButtonTypeSystem];
         [tempBtn setTitle:@"视频图像识别" forState:UIControlStateNormal];
-        tempBtn.titleLabel.font = [UIFont systemFontOfSize:11];
-        [tempBtn setBackgroundColor:[UIColor magentaColor]];
+        tempBtn.titleLabel.font = [UIFont systemFontOfSize:13];
+        [tempBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [tempBtn setBackgroundColor:[UIColor colorWithRed:0.0/255.0 green:199.0/255.0 blue:140.0/255.0 alpha:1.0]];
         tempBtn.tag = 2;
         [tempBtn sizeToFit];
         tempBtn.layer.cornerRadius = 5;
@@ -197,8 +199,9 @@
     if (_objImageBtn == nil) {
         UIButton *tempBtn = [UIButton buttonWithType:UIButtonTypeSystem];
         [tempBtn setTitle:@"图片图像识别" forState:UIControlStateNormal];
-        tempBtn.titleLabel.font = [UIFont systemFontOfSize:11];
-        [tempBtn setBackgroundColor:[UIColor magentaColor]];
+        tempBtn.titleLabel.font = [UIFont systemFontOfSize:13];
+        [tempBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [tempBtn setBackgroundColor:[UIColor colorWithRed:0.0/255.0 green:199.0/255.0 blue:140.0/255.0 alpha:1.0]];
         tempBtn.tag = 3;
         [tempBtn sizeToFit];
         tempBtn.layer.cornerRadius = 5;

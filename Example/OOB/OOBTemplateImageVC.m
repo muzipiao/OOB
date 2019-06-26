@@ -10,14 +10,14 @@
 #import "OOB.h"
 
 @interface OOBTemplateImageVC ()
-
+// 待识别的背景视图
 @property (nonatomic, strong) UIImageView *bgImageView;
-
 // 标记目标的图片框，用户可自定义
 @property (nonatomic, strong) UIImageView *markView;
-
 // 显示相似度标签
 @property (nonatomic, strong) UILabel *similarLabel;
+// 返回按钮
+@property (nonatomic, strong) UIButton *backBtn;
 
 @end
 
@@ -33,52 +33,32 @@
  */
 -(void)createUI{
     self.view.backgroundColor = [UIColor whiteColor];
-    UIImageView *bgImgView = [[UIImageView alloc]initWithImage:self.bgImg];
-    [bgImgView sizeToFit];
-    [self.view addSubview:bgImgView];
-    self.bgImageView = bgImgView;
+    [self.view addSubview:self.bgImageView];
     
     // 标记图片在背景 UIImageView 中
-    UIImageView *markerImgView = [[UIImageView alloc]initWithImage:nil];
-    [bgImgView addSubview:markerImgView];
-    self.markView = markerImgView;
+    [self.bgImageView addSubview:self.markView];
     self.markView.image = [OOBTemplate share].rectMarkerImage; // 设置标记图像为矩形
-    markerImgView.hidden = YES;
     
     // 相似度标签
-    UILabel *simLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
-    simLabel.text = @"相似度：0 %（点击屏幕开始识别目标）";
-    simLabel.textAlignment = NSTextAlignmentCenter;
-    [self.view addSubview:simLabel];
-    self.similarLabel = simLabel;
-    [simLabel sizeToFit];
+    [self.view addSubview:self.similarLabel];
     
-    // 范围按钮
-    UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    [backBtn setTitle:@"返回主页" forState:UIControlStateNormal];
-    [self.view addSubview:backBtn];
-    [backBtn addTarget:self action:@selector(backBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    // 返回按钮
+    [self.view addSubview:self.backBtn];
     
     CGFloat margin = 20;
-    
     CGFloat sw = [UIScreen mainScreen].bounds.size.width;
     
     // ImageView 和图片保持宽高比，
     CGSize bgImgSize = self.bgImg.size;
     CGFloat bgW = sw - margin * 4;
     CGFloat bgH = (bgImgSize.height / bgImgSize.width) * bgW;
-    bgImgView.frame = CGRectMake(margin * 2, margin, bgW, bgH);
+    self.bgImageView.frame = CGRectMake(margin * 2, margin, bgW, bgH);
     
-    CGFloat labelHeight = simLabel.bounds.size.height;
-    simLabel.frame = CGRectMake(0, margin, sw, labelHeight);
+    CGFloat labelHeight = self.similarLabel.bounds.size.height;
+    self.similarLabel.frame = CGRectMake(0, margin, sw, labelHeight + 5);
     
-    backBtn.frame = CGRectMake(15, margin, 50, 30);
-    [backBtn sizeToFit];
-}
-
-// 返回主页
--(void)backBtnClick:(UIButton *)sender{
-    [self dismissViewControllerAnimated:YES completion:nil];
+    self.backBtn.frame = CGRectMake(15, margin, 50, 30);
+    [self.backBtn sizeToFit];
 }
 
 // 点击识别图像中的目标
@@ -122,6 +102,59 @@ static BOOL kDoing = NO; // 防止暴力连续点击
         }
     }];
 }
+
+// 返回主页
+-(void)backBtnClick:(UIButton *)sender{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+///MARK: - Lazy Load
+-(UIButton *)backBtn{
+    if (!_backBtn) {
+        UIButton *tempBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+        [tempBtn setTitle:@"返回主页" forState:UIControlStateNormal];
+        [tempBtn addTarget:self action:@selector(backBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [tempBtn sizeToFit];
+        _backBtn = tempBtn;
+    }
+    return _backBtn;
+}
+
+// 标记图像
+-(UIImageView *)markView{
+    if (!_markView) {
+        UIImage *img = [OOBTemplate share].rectMarkerImage; // 设置标记图像为矩形
+        UIImageView *markerImgView = [[UIImageView alloc]initWithImage:img];
+        [markerImgView sizeToFit];
+        markerImgView.hidden = YES;
+        _markView = markerImgView;
+    }
+    return _markView;
+}
+
+// 相似度标签
+-(UILabel *)similarLabel{
+    if (!_similarLabel) {
+        UILabel *simLabel = [[UILabel alloc]init];
+        simLabel.text = @"点击屏幕开始识别目标";
+        simLabel.textAlignment = NSTextAlignmentCenter;
+        simLabel.font = [UIFont systemFontOfSize:14];
+        [simLabel sizeToFit];
+        _similarLabel = simLabel;
+    }
+    return _similarLabel;
+}
+
+// 显示背景图的图层
+-(UIImageView *)bgImageView{
+    if (!_bgImageView) {
+        UIImageView *bgImgView = [[UIImageView alloc]initWithImage:_bgImg];
+        [bgImgView sizeToFit];
+        _bgImageView = bgImgView;
+    }
+    return _bgImageView;
+}
+
 
 
 

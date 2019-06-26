@@ -40,7 +40,7 @@ static CGFloat videoRenderWidth = 0;
         return nil;
     }
     // 储存原始尺寸
-    CGSize orginVideoSize = CGSizeMake(videoRenderWidth, videoMat.rows);
+    CGSize originVideoSize = CGSizeMake(videoRenderWidth, videoMat.rows);
     CGFloat videoFillWidth = videoMat.cols - videoRenderWidth;
     
     // 待比较的图像, 转为灰度图像
@@ -49,6 +49,11 @@ static CGFloat videoRenderWidth = 0;
         Mat colorMat;
         UIImageToMat(tImg, colorMat);
         cvtColor(colorMat, gVideoTgMat, CV_BGR2GRAY);
+        // 将目标大图缩小为和背景大小相差不大的图像
+        int reTgCols1st = 120;
+        int reTgRows1st = (int)(((CGFloat)reTgCols1st * (CGFloat)gVideoTgMat.rows)/(CGFloat)gVideoTgMat.cols);
+        cv::Size reTgSize1st = cv::Size(reTgCols1st,reTgRows1st);
+        resize(gVideoTgMat, gVideoTgMat, reTgSize1st);
     }
     //判断是否为空，为空直接返回
     if (gVideoTgMat.empty()) {
@@ -58,7 +63,7 @@ static CGFloat videoRenderWidth = 0;
     NSDictionary *compDict = [self compareBgMat:videoMat TargetMat:gVideoTgMat SimilarValue:similarValue];
     
     NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:compDict];
-    [resultDict setObject:NSStringFromCGSize(orginVideoSize) forKey:kVideoSize];
+    [resultDict setObject:NSStringFromCGSize(originVideoSize) forKey:kVideoSize];
     [resultDict setObject:@(videoFillWidth) forKey:kVideoFillWidth];
     return resultDict.copy;
 }
@@ -102,13 +107,11 @@ static CGFloat videoRenderWidth = 0;
  */
 static CGFloat scaleMid = 0.5; // 缩放，将目标图像从 0.5 倍背景图像尺寸，向两边缩放，先减后加。
 + (nullable NSDictionary *)compareBgMat:(Mat)bgMat TargetMat:(Mat)tgMat SimilarValue:(CGFloat)similarValue{
-    // 将大图像缩放为小图
-    CGFloat orginBgW = bgMat.cols;
-    CGFloat orginBgH = bgMat.rows;
+    // 将背景大图像缩放为小图
     int reBgCols = 160; // 宽度固定为160像素
-    CGFloat reBgScale = orginBgW/160.0;
+    CGFloat reBgScale = (CGFloat)bgMat.cols/160.0;
     // 保持大图宽高比
-    int reBgRows = (int)((CGFloat)reBgCols * orginBgH)/orginBgW;
+    int reBgRows = (int)(((CGFloat)reBgCols * (CGFloat)bgMat.rows)/(CGFloat)bgMat.cols);
     cv::Size reBgSize = cv::Size(reBgCols,reBgRows);
     resize(bgMat, bgMat, reBgSize);
     

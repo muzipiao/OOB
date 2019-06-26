@@ -311,7 +311,7 @@ static OOBTemplate *instance;
     [tmpAssetReader addOutput:trackOutput];
     // 开始读取 CMSampleBufferRef
     [tmpAssetReader startReading];
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         CGFloat frameTime = 0.035; // 读取速率
         if (track.nominalFrameRate > 0) {
             frameTime = 1.0/track.nominalFrameRate;
