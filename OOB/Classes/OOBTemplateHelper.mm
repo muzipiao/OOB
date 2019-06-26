@@ -211,9 +211,9 @@ static CGFloat scaleMid = 0.5; // 缩放，将目标图像从 0.5 倍背景图�
  @param sampleBuffer YUV 格式视频流
  @return 当前视频流的 CGImage
  */
-+ (nullable CGImageRef)imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer{
++ (nullable UIImage *)imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer{
     if (!sampleBuffer) {
-        return NULL;
+        return nil;
     }
     // Get a CMSampleBuffer's Core Video image buffer for the media data
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -257,16 +257,16 @@ static CGFloat scaleMid = 0.5; // 缩放，将目标图像从 0.5 倍背景图�
     CGContextRef context = CGBitmapContextCreate(rgbBuffer, width, height, 8,
                                                  width * bytesPerPixel, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipLast);
     //根据这个位图 context 中的像素创建一个 Quartz image 对象
-    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
+    CGImageRef quartzImageRef = CGBitmapContextCreateImage(context);
+    UIImage *quartzImg = [UIImage imageWithCGImage:quartzImageRef];
+    CGImageRelease(quartzImageRef);
     // Unlock the pixel buffer
     CVPixelBufferUnlockBaseAddress(imageBuffer,0);
-    
-    // Free up the context and color space
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
     free(rgbBuffer);
     
-    return quartzImage;
+    return quartzImg;
 }
 
 /**

@@ -34,14 +34,11 @@
 -(void)createUI{
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.bgImageView];
-    
+
     // 标记图片在背景 UIImageView 中
     [self.bgImageView addSubview:self.markView];
-    self.markView.image = [OOBTemplate share].rectMarkerImage; // 设置标记图像为矩形
-    
     // 相似度标签
     [self.view addSubview:self.similarLabel];
-    
     // 返回按钮
     [self.view addSubview:self.backBtn];
     
@@ -123,7 +120,7 @@ static BOOL kDoing = NO; // 防止暴力连续点击
 // 标记图像
 -(UIImageView *)markView{
     if (!_markView) {
-        UIImage *img = [OOBTemplate share].rectMarkerImage; // 设置标记图像为矩形
+        UIImage *img = [OOBTemplate getRectWithSize:_targetImg.size Color:[UIColor redColor] Width:3 Radius:5]; // 设置标记图像为矩形
         UIImageView *markerImgView = [[UIImageView alloc]initWithImage:img];
         [markerImgView sizeToFit];
         markerImgView.hidden = YES;

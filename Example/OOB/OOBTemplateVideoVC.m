@@ -15,7 +15,7 @@
 // 读取视频CMSampleBufferRef
 @property (nonatomic, strong) AVAssetReader *assetReader;
 // 视频文件展示View
-@property (nonatomic, strong) UIView *videoView;
+@property (nonatomic, strong) UIImageView *videoView;
 // 标记目标的图片框，用户可自定义
 @property (nonatomic, strong) UIImageView *markView;
 // 显示相似度标签
@@ -60,19 +60,12 @@
 
 // 返回主页
 -(void)backBtnClick:(UIButton *)sender{
-    [[OOBTemplate share] stopMatch];
+    [OOBTemplate stopMatch];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // 点击识别图像中的目标
-static BOOL kDoing = NO; // 防止暴力连续点击
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-    if (kDoing) {
-        // 连续点击停止上一个
-        [[OOBTemplate share] stopMatch];
-        kDoing = NO;
-    }
-    kDoing = YES;
     // 待识别的视频
     NSURL *vdUrl = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
     /**
@@ -80,17 +73,16 @@ static BOOL kDoing = NO; // 防止暴力连续点击
      * targetRect 目标在背景图片中的位置，注意不是 UImageView 中的实际位置，需要缩放转换
      * similarValue 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
      */
-    [OOBTemplate share].similarValue = 0.8;
-    [[OOBTemplate share] matchVideo:self.targetImg VideoURL:vdUrl resultBlock:^(CGRect targetRect, CGFloat similarValue, CGImageRef  _Nonnull currentFrame) {
+    OOBTemplate.similarValue = 0.8;
+    [OOBTemplate matchVideo:self.targetImg VideoURL:vdUrl resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
         self.similarLabel.text = [NSString stringWithFormat:@"相似度：%.0f %%",similarValue * 100];
         /**
          * 显示返回的视频图像，载体视图和视频图像宽度不同会变形，需要矫正
          */
-        CGFloat vdW = CGImageGetWidth(currentFrame);
-        CGFloat vdH = CGImageGetHeight(currentFrame);
+        CGSize frameSize = frameImg.size;
         CGSize vdViewSize = self.videoView.frame.size;
-        CGFloat scaleX = vdViewSize.width / vdW;
-        CGFloat scaleY = vdViewSize.height / vdH;
+        CGFloat scaleX = vdViewSize.width / frameSize.width;
+        CGFloat scaleY = vdViewSize.height / frameSize.height;
         // 缩放变换
         CGFloat tgX = targetRect.origin.x * scaleX;
         CGFloat tgY = targetRect.origin.y * scaleY;
@@ -103,7 +95,7 @@ static BOOL kDoing = NO; // 防止暴力连续点击
             self.markView.hidden = YES;
         }
         // 视频预览
-        self.videoView.layer.contents = CFBridgingRelease(currentFrame);
+        self.videoView.image = frameImg;
     }];
 }
 
@@ -122,7 +114,7 @@ static BOOL kDoing = NO; // 防止暴力连续点击
 // 标记图像
 -(UIImageView *)markView{
     if (!_markView) {
-        UIImage *img = [OOBTemplate share].rectMarkerImage; // 设置标记图像为矩形
+        UIImage *img = [OOBTemplate getRectWithSize:_targetImg.size Color:[UIColor redColor] Width:3 Radius:5]; // 设置标记图像为矩形
         UIImageView *markerImgView = [[UIImageView alloc]initWithImage:img];
         [markerImgView sizeToFit];
         markerImgView.hidden = YES;
@@ -145,9 +137,9 @@ static BOOL kDoing = NO; // 防止暴力连续点击
 }
 
 // 显示视频的图层
--(UIView *)videoView{
+-(UIImageView *)videoView{
     if (!_videoView) {
-        UIView *vdView = [[UIView alloc]initWithFrame:CGRectZero];
+        UIImageView *vdView = [[UIImageView alloc]initWithFrame:CGRectZero];
         vdView.backgroundColor = [UIColor lightGrayColor];
         _videoView = vdView;
     }

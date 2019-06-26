@@ -10,55 +10,56 @@
 #import "OOBTemplateHelper.h"
 
 #define kDefaultSimilarValue 0.7
-#define kDefaultRadiusValue  5.0
-
 
 /**
  * 当前识别类型
  */
-typedef NS_ENUM(NSInteger, OOBTemplateType) {
+typedef NS_ENUM(NSInteger, OOBType) {
     /**
      * 摄像头
      */
-    OOBTemplateTypeCamera,
+    OOBTypeCamera,
     /**
      * 视频
      */
-    OOBTemplateTypeVideo,
+    OOBTypeVideo,
     /**
      * 图片
      */
-    OOBTemplateTypeImage
+    OOBTypeImage
 };
 
 /**
  * 识别结果 Block
  */
-typedef void (^ResultBlock) (CGRect, CGFloat);
+typedef void (^CameraResultBlock) (CGRect, CGFloat);
+typedef void (^VideoResultBlock) (CGRect, CGFloat, UIImage *);
 
 @interface OOBTemplate ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 
+@property (nonatomic, strong) UIView *preview;
+@property (nonatomic, strong) UIImage *targetImg;
+@property (nonatomic, assign) CGFloat similarValue;
+@property (nonatomic, assign) OOBCameraType cameraType;
+// 视频预览视图图像质量，默认预览视频尺寸 1920x1080，可自行设置。
+@property(nonatomic, copy) AVCaptureSessionPreset sessionPreset;
 // 当前识别类型，相机、视频或图片
-@property (nonatomic, assign) OOBTemplateType templateType;
+@property (nonatomic, assign) OOBType oobType;
 // 读取视频CMSampleBufferRef
 @property (nonatomic, strong) AVAssetReader *assetReader;
-// 预览视频图层(Preview the video layer)
+// 预览视频图层,如果没有设置 cameraPreview,则不显示，获取的坐标默认为全屏坐标。
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
-// 当前视频会话(current video session)
 @property (nonatomic, strong) AVCaptureSession *session;
-// 前置摄像头输入(Front camera input)
 @property (nonatomic, strong) AVCaptureDeviceInput *frontCameraInput;
-// 后置摄像头输入(Rear camera input)
 @property (nonatomic, strong) AVCaptureDeviceInput *backCameraInput;
-// 识别结果(Identify the result)
-@property (nonatomic, copy) ResultBlock resultBlock;
+@property (nonatomic, copy) CameraResultBlock cameraResultBlock;
+@property (nonatomic, copy) VideoResultBlock videoResultBlock;
 
 @end
 
 @implementation OOBTemplate
 
 ///MARK: - 定位单例对象
-
 static OOBTemplate *instance;
 +(nonnull instancetype )share{
     static dispatch_once_t oneToken;
@@ -85,58 +86,78 @@ static OOBTemplate *instance;
 - (instancetype)init{
     self = [super init];
     if (self) {
-        _templateType = OOBTemplateTypeCamera; // 当前识别类型
+        _oobType = OOBTypeCamera; // 当前识别类型
         _sessionPreset = AVCaptureSessionPresetHigh; // 默认视频图像尺寸 1920x1080
         _cameraType = OOBCameraTypeBack; // 默认后置摄像头
-        _markerLineColor = [UIColor redColor]; // 标记图像默认是红色
-        _markerCornerRadius = kDefaultRadiusValue; // 如果是矩形，默认切圆角半径
-        _markerLineWidth = kDefaultRadiusValue; // 标记图像线宽默认是 1.0
         _similarValue = kDefaultSimilarValue; // 相似度阈值
     }
     return self;
 }
 
-/**
- * 识别图片中的目标，并返回目标在图片中的位置，实际相似度
- * 注意：返回的 Frame 是相对于图片的，如果要做标记，根据图片在 UImageView 中的 X、Y 方向缩放比例换算，具体参考 Demo 中 OOBTemplateImageVC 的示例。
- @param targetImg 待识别的目标图像
- @param backgroudImg 背景图像，在背景图像上搜索目标是否存在
- @param minSimilarValue 要求的相似度，取值在 0 到 1 之间，1 为最大，越接近 1 表示要求越高
- @param resultBlock 识别结果，分别是目标位置和实际的相似度
- */
-+ (void)matchImage:(UIImage *)targetImg BgImg:(UIImage *)backgroudImg Similar:(CGFloat)minSimilarValue resultBlock:(void (^)(CGRect, CGFloat))resultBlock{
-    if (minSimilarValue > 1 || minSimilarValue < 0) {
-        minSimilarValue = kDefaultSimilarValue; // 取默认值
+///MARK: - 类方法重写 Setter 和 Getter
++ (UIImage *)targetImg{
+    return [OOBTemplate share].targetImg;
+}
++ (void)setTargetImg:(UIImage *)targetImg{
+    if (!targetImg) {
+        OOBLog(@"目标图像 targetImg 不应为 nil。");
     }
-    NSDictionary *targetDict = [OOBTemplateHelper locInImg:backgroudImg TargetImg:targetImg SimilarValue:minSimilarValue];
-    CGRect targetRect = CGRectFromString([targetDict objectForKey:kTargetRect]);
-    // 根据背景视图的 Scale 将像素变换为苹果坐标系
-    CGFloat bgScale = backgroudImg.scale;
-    CGFloat tgX = targetRect.origin.x / bgScale;
-    CGFloat tgY = targetRect.origin.y / bgScale;
-    CGFloat tgW = targetRect.size.width / bgScale;
-    CGFloat tgH = targetRect.size.height / bgScale;
-    CGRect scaleRect = CGRectMake(tgX, tgY, tgW, tgH);
-    CGFloat similarValue = [[targetDict objectForKey:kSimilarValue] floatValue];
-    if (resultBlock) {
-        resultBlock(scaleRect, similarValue);
+    [OOBTemplate share].targetImg = targetImg;
+}
+
++ (CGFloat)similarValue{
+    return [OOBTemplate share].similarValue;
+}
++ (void)setSimilarValue:(CGFloat)similarValue{
+    if (similarValue <=1 && similarValue >=0) {
+        [OOBTemplate share].similarValue = similarValue;
+    }else{
+        OOBLog(@"匹配相似度 similarValue 取值区间应在 0 到 1 之间。");
+        [OOBTemplate share].similarValue = 0.7;
     }
 }
 
-///MARK: - 重写 Setter
-
--(void)setSimilarValue:(CGFloat)similarValue{
-    _similarValue = similarValue;
-    if (similarValue > 1 || similarValue < 0) {
-        _similarValue = 0.7;
++ (UIView *)cameraPreview{
+    return [OOBTemplate share].preview;
+}
++ (void)setCameraPreview:(UIView *)cameraPreview{
+    if ([OOBTemplate share].oobType != OOBTypeCamera) {
+        OOBLog(@"非识别摄像头目标，不支持设置 cameraPreview。");
+        return;
     }
+    [OOBTemplate share].preview = cameraPreview;
+}
+
++ (OOBCameraType)cameraType{
+    return [OOBTemplate share].cameraType;
+}
++ (void)setCameraType:(OOBCameraType)cameraType{
+    if ([OOBTemplate share].oobType != OOBTypeCamera) {
+        OOBLog(@"非识别摄像头目标，不支持设置 cameraType。");
+        return;
+    }
+    [OOBTemplate share].cameraType = cameraType;
+}
+
++ (AVCaptureSessionPreset)cameraSessionPreset{
+    return [OOBTemplate share].sessionPreset;
+}
++ (void)setCameraSessionPreset:(AVCaptureSessionPreset)cameraSessionPreset{
+    if ([OOBTemplate share].oobType != OOBTypeCamera) {
+        OOBLog(@"非识别摄像头目标，不支持设置 cameraSessionPreset。");
+        return;
+    }
+    [OOBTemplate share].sessionPreset = cameraSessionPreset;
+}
+
+///MARK: - 单例重写 Setter
+-(void)setTargetImg:(UIImage *)targetImg{
+    UIImage *removeAlphaImg = [OOBTemplateHelper removeAlpha:targetImg];
+    _targetImg = removeAlphaImg;
 }
 
 -(void)setCameraType:(OOBCameraType)cameraType{
     _cameraType = cameraType;
-    if (_templateType != OOBTemplateTypeCamera) {
-        return;
-    }
     [self.session stopRunning];
     if (cameraType == OOBCameraTypeBack){
         [self.session removeInput:self.frontCameraInput];
@@ -180,9 +201,6 @@ static OOBTemplate *instance;
  */
 -(void)setPreview:(UIView *)preview{
     _preview = preview;
-    if (_templateType != OOBTemplateTypeCamera) {
-        return;
-    }
     [self.session stopRunning];
     if (_previewLayer) {
         [_previewLayer removeFromSuperlayer];
@@ -205,9 +223,6 @@ static OOBTemplate *instance;
  */
 -(void)setSessionPreset:(AVCaptureSessionPreset)sessionPreset{
     _sessionPreset = sessionPreset;
-    if (_templateType != OOBTemplateTypeCamera) {
-        return;
-    }
     if ([self.session canSetSessionPreset:sessionPreset]) {
         self.session.sessionPreset = sessionPreset;
     }else{
@@ -215,54 +230,13 @@ static OOBTemplate *instance;
     }
 }
 
-/**
- * 设置目标图像，并将 Alpha 通道置为白色
- */
--(void)setTargetImg:(UIImage *)targetImg{
-    UIImage *removeAlphaImg = [OOBTemplateHelper removeAlpha:targetImg];
-    _targetImg = removeAlphaImg;
-}
-
-/**
- * 标记框的线宽，默认宽度 5.0f。
- */
--(void)setMarkerLineWidth:(CGFloat)markerLineWidth{
-    _markerLineWidth = markerLineWidth;
-    [self updateMarkerImage];
-}
-
-/**
- * 标记框为矩形时，切圆角，默认 5.0f。
- */
--(void)setMarkerCornerRadius:(CGFloat)markerCornerRadius{
-    _markerCornerRadius = markerCornerRadius;
-    [self updateMarkerImage];
-}
-
-/**
- * 标记框的颜色，默认红色。
- */
--(void)setMarkerLineColor:(UIColor *)markerLineColor{
-    _markerLineColor = markerLineColor;
-    [self updateMarkerImage];
-}
-
-/**
- * 更新标记图像。
- */
--(void)updateMarkerImage{
-    UIImage *tempImg = nil;
-    if (_rectMarkerImage) {
-        _rectMarkerImage = nil;
-        tempImg = self.rectMarkerImage;
-    }
-    if (_ovalMarkerImage) {
-        _ovalMarkerImage = nil;
-        tempImg = self.ovalMarkerImage;
-    }
-}
-
 ///MARK: - 对比图像
+/**
+ * 停止识别图像。如果调用摄像头或播放视频，必须手动执行此方法释放资源。
+ */
++ (void)stopMatch{
+    [[OOBTemplate share] stopMatch];
+}
 
 /**
  * 识别相机视频流中目标，并返回目标图像坐标位置，坐标位置与设置的预览视图(preview)相关。
@@ -270,13 +244,11 @@ static OOBTemplate *instance;
  @param targetImg 待识别的目标图像
  @param resultBlock 识别结果,targetRect：目标位置，similarValue：目标与视频物体中的相似度
  */
--(void)matchCamera:(UIImage *)targetImg resultBlock:(void (^)(CGRect, CGFloat))resultBlock{
-    _templateType = OOBTemplateTypeCamera; // 标记为相机
-    self.targetImg = targetImg;
-    self.resultBlock = resultBlock;
-    // 更新标记图像
-    [self updateMarkerImage];
-    [self.session startRunning];
++ (void)matchCamera:(UIImage *)targetImg resultBlock:(void (^)(CGRect, CGFloat))resultBlock{
+    [OOBTemplate share].oobType = OOBTypeCamera; // 标记为相机
+    [OOBTemplate share].targetImg = targetImg;
+    [OOBTemplate share].cameraResultBlock = resultBlock;
+    [[OOBTemplate share].session startRunning];
 }
 
 /**
@@ -285,11 +257,18 @@ static OOBTemplate *instance;
  @param vURL 视频文件 URL
  @param resultBlock 识别结果，分别是目标位置和实际的相似度，视频当前帧图像
  */
-- (void)matchVideo:(UIImage *)targetImg VideoURL:(NSURL *)vURL
-       resultBlock:(nullable void (^)(CGRect targetRect, CGFloat similarValue, CGImageRef currentFrame))resultBlock{
-    _templateType = OOBTemplateTypeVideo; // 标记为相机
-    self.targetImg = targetImg; // 移除Alpha通道
-    [self updateMarkerImage]; // 更新标记图像
++ (void)matchVideo:(UIImage *)targetImg VideoURL:(NSURL *)vURL resultBlock:(void (^)(CGRect, CGFloat, UIImage * _Nullable))resultBlock{
+    [OOBTemplate share].oobType = OOBTypeVideo; // 标记为视频
+    [OOBTemplate share].targetImg = targetImg; // 移除Alpha通道
+    [OOBTemplate share].videoResultBlock = resultBlock;
+    [[OOBTemplate share] matchVideoWithURL:vURL];
+}
+
+/**
+ * 识别视频中的目标
+ @param vURL 视频文件 URL
+ */
+- (void)matchVideoWithURL:(NSURL *)vURL{
     if (self.assetReader) {
         [self.assetReader cancelReading];
     }
@@ -325,13 +304,13 @@ static OOBTemplate *instance;
             if (!samBufRef) {
                 break;
             }
-            CGImageRef frameRef = [OOBTemplateHelper imageFromSampleBuffer:samBufRef];
+            UIImage *frameImg = [OOBTemplateHelper imageFromSampleBuffer:samBufRef];
             NSDictionary *tgDict = [OOBTemplateHelper locInVideo:samBufRef TemplateImg:self.targetImg SimilarValue:self.similarValue];
             CGRect tgRect = CGRectFromString([tgDict objectForKey:kTargetRect]);
             CGFloat realSimilarValue = [[tgDict objectForKey:kSimilarValue] floatValue];
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (resultBlock) {
-                    resultBlock(tgRect, realSimilarValue, frameRef);
+                if (self.videoResultBlock) {
+                    self.videoResultBlock(tgRect, realSimilarValue, frameImg);
                 }
                 // 释放 CMSampleBufferRef
                 if (samBufRef) {
@@ -345,8 +324,34 @@ static OOBTemplate *instance;
     });
 }
 
-///MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
+/**
+ * 识别图片中的目标，并返回目标在图片中的位置，实际相似度
+ * 注意：返回的 Frame 是相对于图片的，如果要做标记，根据图片在 UImageView 中的 X、Y 方向缩放比例换算，具体参考 Demo 中 OOBTemplateImageVC 的示例。
+ @param targetImg 待识别的目标图像
+ @param backgroudImg 背景图像，在背景图像上搜索目标是否存在
+ @param minSimilarValue 要求的相似度，取值在 0 到 1 之间，1 为最大，越接近 1 表示要求越高
+ @param resultBlock 识别结果，分别是目标位置和实际的相似度
+ */
++ (void)matchImage:(UIImage *)targetImg BgImg:(UIImage *)backgroudImg Similar:(CGFloat)minSimilarValue resultBlock:(void (^)(CGRect, CGFloat))resultBlock{
+    if (minSimilarValue > 1 || minSimilarValue < 0) {
+        minSimilarValue = kDefaultSimilarValue; // 取默认值
+    }
+    NSDictionary *targetDict = [OOBTemplateHelper locInImg:backgroudImg TargetImg:targetImg SimilarValue:minSimilarValue];
+    CGRect targetRect = CGRectFromString([targetDict objectForKey:kTargetRect]);
+    // 根据背景视图的 Scale 将像素变换为苹果坐标系
+    CGFloat bgScale = backgroudImg.scale;
+    CGFloat tgX = targetRect.origin.x / bgScale;
+    CGFloat tgY = targetRect.origin.y / bgScale;
+    CGFloat tgW = targetRect.size.width / bgScale;
+    CGFloat tgH = targetRect.size.height / bgScale;
+    CGRect scaleRect = CGRectMake(tgX, tgY, tgW, tgH);
+    CGFloat similarValue = [[targetDict objectForKey:kSimilarValue] floatValue];
+    if (resultBlock) {
+        resultBlock(scaleRect, similarValue);
+    }
+}
 
+///MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection{
     // 识别相机图像
     NSDictionary *targetDict = [OOBTemplateHelper locInVideo:sampleBuffer TemplateImg:self.targetImg SimilarValue:self.similarValue];
@@ -381,8 +386,8 @@ static OOBTemplate *instance;
         }
         CGRect reLocationRect = CGRectMake(x, y, w, h);
         
-        if (self.resultBlock) {
-            self.resultBlock(reLocationRect, similarValue);
+        if (self.cameraResultBlock) {
+            self.cameraResultBlock(reLocationRect, similarValue);
         }
     });
 }
@@ -471,45 +476,27 @@ static OOBTemplate *instance;
     return nil;
 }
 
-// 获取矩形标记图像
--(UIImage *)rectMarkerImage{
-    if (_rectMarkerImage == nil) {
-        // 绘制矩形图像
-        _rectMarkerImage = [self drawRectWithColor:OOBMarkerTypeRect];
-    }
-    return _rectMarkerImage;
-}
-
-// 获取椭圆标记图像
--(UIImage *)ovalMarkerImage{
-    if (_ovalMarkerImage == nil) {
-        // 绘制椭圆图像
-        _ovalMarkerImage = [self drawRectWithColor:OOBMarkerTypeOval];
-    }
-    return _ovalMarkerImage;
-}
-
-// 绘制标记图片
--(UIImage *)drawRectWithColor:(OOBMarkerType)markerType{
-    CGFloat imgWidth = [UIScreen mainScreen].bounds.size.width;
-    CGFloat imgHeight = imgWidth;
-    if (_targetImg && (_targetImg.size.width != _targetImg.size.height)) {
-        imgHeight = imgWidth * _targetImg.size.height / _targetImg.size.width;
-    }
-    CGFloat kBorderWidth = self.markerLineWidth;
+/**
+ * 矩形标记框（辅助功能，例如显示目标位置）
+ @param imgSize 标记框图片尺寸
+ @param lineColor 标记框的线条颜色
+ @param lineWidth 标记框的线条粗细
+ @param cornerRadius 矩形标记框的切圆角
+ @return 中间透明的矩形标记框
+ */
++ (UIImage *)getRectWithSize:(CGSize)imgSize Color:(UIColor *)lineColor Width:(CGFloat)lineWidth Radius:(CGFloat)cornerRadius{
+    CGFloat imgWidth = imgSize.width;
+    CGFloat imgHeight = imgSize.height;
     // 画布大小
-    CGRect contextRect = CGRectMake(0, 0, imgWidth + kBorderWidth * 2, imgHeight + kBorderWidth * 2);
+    CGRect contextRect = CGRectMake(0, 0, imgWidth + lineWidth * 2, imgHeight + lineWidth * 2);
     // 标记图像大小
-    CGRect targetRect = CGRectMake(kBorderWidth, kBorderWidth, imgWidth, imgHeight);
+    CGRect targetRect = CGRectMake(lineWidth, lineWidth, imgWidth, imgHeight);
     UIGraphicsBeginImageContextWithOptions(contextRect.size, NO, 0);
     // 设置线条颜色
-    [self.markerLineColor set];
+    [lineColor set];
     // 默认是矩形
-    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:targetRect cornerRadius:self.markerCornerRadius];
-    if (markerType == OOBMarkerTypeOval) {
-        path = [UIBezierPath bezierPathWithOvalInRect:targetRect];
-    }
-    path.lineWidth = kBorderWidth;
+    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:targetRect cornerRadius:cornerRadius];
+    path.lineWidth = lineWidth;
     // 绘制线条
     [path stroke];
     // 获取图片
@@ -521,12 +508,9 @@ static OOBTemplate *instance;
 ///MARK: - 停止识别并释放资源
 -(void)stopMatch{
     // 恢复默认值（Restore Defaults）
-    _templateType = OOBTemplateTypeCamera; // 默认为相机
+    _oobType = OOBTypeCamera; // 默认为相机
     _sessionPreset = AVCaptureSessionPresetHigh; // 默认视频图像尺寸 1920x1080
     _cameraType = OOBCameraTypeBack; // 默认后置摄像头
-    _markerLineColor = [UIColor redColor]; // 标记图像默认是红色
-    _markerCornerRadius = kDefaultRadiusValue; // 如果是矩形，默认切圆角半径
-    _markerLineWidth = kDefaultRadiusValue; // 标记图像线宽默认是 1.0
     _similarValue = kDefaultSimilarValue; // 相似度阈值
     
     // 释放 session
@@ -536,13 +520,13 @@ static OOBTemplate *instance;
     _session = nil;
     _assetReader = nil;
     // 释放内存
-    _rectMarkerImage = nil;
-    _ovalMarkerImage = nil;
     _preview = nil;
     _previewLayer = nil;
+    _targetImg = nil;
     _frontCameraInput = nil;
     _backCameraInput = nil;
-    _resultBlock = nil;
+    _cameraResultBlock = nil;
+    _videoResultBlock = nil;
 }
 
 @end

@@ -48,7 +48,7 @@ pod 'OOB'
 
 ```objc
 // 设置视频预览图层
-[OOBTemplate share].preview = self.view;
+OOBTemplate.preview = self.view;
 ```
 ### 调用图像识别
 
@@ -62,61 +62,53 @@ pod 'OOB'
 @param similarValue 目标模板与视频图像中图像的相似度
 @return 识别图像在block中回调
 */
-[[OOBTemplate share] matchCamera:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-OOBLog(@"相似度：%.0f %%，目标位置：Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
+[OOBTemplate matchCamera:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+    OOBLog(@"相似度：%.0f %%，目标位置：Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
 }];
 ```
 Block 回调会返回目标位置，和对比的相似度，Block 刷新频率和视频帧率相同。
 
 ### 结束图像识别
 
-识别任务结束，或当期视图销毁时，调用 `[[OOBTemplate share] stopMatch];` 释放资源即可。
+识别任务结束，或当期视图销毁时，调用 `[OOBTemplate stopMatch];` 释放资源即可。
 
 ### 其他设置
 
 切换目标图像，可随时切换
 
 ```objc
-[OOBTemplate share].targetImage = [UIImage imageNamed:@"apple"];
+OOBTemplate.targetImage = [UIImage imageNamed:@"apple"];
 ```
 
 切换前置后置摄像头
 
 ```objc
 // 切换为后置摄像头
-[OOBTemplate share].cameraType = OOBCameraTypeBack;
+OOBTemplate.cameraType = OOBCameraTypeBack;
 // 切换为前置摄像头
-[OOBTemplate share].cameraType = OOBCameraTypeFront;
+OOBTemplate.cameraType = OOBCameraTypeFront;
 ```
 
 设置预览视频图像质量，默认预览视频尺寸 1920x1080
 
 ```objc
 // 设置视频预览质量为高
-[OOBTemplate share].sessionPreset = AVCaptureSessionPresetHigh;
+OOBTemplate.sessionPreset = AVCaptureSessionPresetHigh;
 // 设置视频预览尺寸为 640x480
-[OOBTemplate share].sessionPreset = AVCaptureSessionPreset640x480;
+OOBTemplate.sessionPreset = AVCaptureSessionPreset640x480;
 ```
 设置相似度阈值，默认是 0.7，最大为 1。值设置的越小误报率高，值设置的越大越难匹配。
 
 ```objc
 // 设置阈值为 0.8，识别更精确一些。
-[OOBTemplate share].similarValue = 0.8;
+OOBTemplate.similarValue = 0.8;
 ```
 
 生成一张标记目标的 UIImage 图片，自带一张矩形和一张圆形的标记图片。
 
 ```objc
-// 更改标记框框颜色为深红色：R=254 G=67 B=101
-[OOBTemplate share].markerLineColor =  [UIColor colorWithRed:254.0/255.0 green:67.0/255.0 blue:101.0/255.0 alpha:1.0];
-// 更改标记框线宽为 8.0
-[OOBTemplate share].markerLineWidth = 8.0;
-// 更改矩形框切圆角半径为 8.0
-[OOBTemplate share].markerCornerRadius = 8.0;
-// 生成一张矩形标记框
-UIImage *rectImage = [OOBTemplate share].rectMarkerImage;
-// 生成一张椭圆标记框
-UIImage *ovalImage = [OOBTemplate share].ovalMarkerImage;
+// 生成一张和目标图片一样大小的矩形框图片，标记目标位置。颜色红色，线宽为 3，切圆角 5
+UIImage *markImage = [OOBTemplate getRectWithSize:_targetImg.size Color:[UIColor redColor] Width:3 Radius:5]; // 设置标记图像为矩形
 ```
 
 ## 其他

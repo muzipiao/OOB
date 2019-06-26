@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param sampleBuffer YUV 格式视频流
  @return 当前视频流的 CGImage
  */
-+ (nullable CGImageRef)imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer;
++ (nullable UIImage *)imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer;
 
 /**
  * 将透明像素填充为白色，对其他像素无影响

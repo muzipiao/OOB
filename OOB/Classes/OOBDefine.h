@@ -53,23 +53,4 @@ typedef NS_ENUM(NSInteger, OOBCameraType) {
     OOBCameraTypeFront
 };
 
-
-/**
- * 标记图像类型
- */
-typedef NS_ENUM(NSInteger, OOBMarkerType) {
-    /**
-     * 不使用标记
-     */
-    OOBMarkerTypeNone,
-    /**
-     * 矩形标记
-     */
-    OOBMarkerTypeRect,
-    /**
-     * 椭圆标记
-     */
-    OOBMarkerTypeOval
-};
-
 #endif /* OOBDefine_h */

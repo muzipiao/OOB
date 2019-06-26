@@ -35,7 +35,7 @@
 
 - (void)tearDown
 {
-    [[OOBTemplate share] stopMatch];
+    [OOBTemplate stopMatch];
     [self.assetReader cancelReading];
     self.assetReader = nil;
     self.targetImage = nil;
@@ -43,32 +43,18 @@
 }
 
 - (void)testInitialize{
-    OOBTemplate *OOBShare = [OOBTemplate share];
-    XCTAssertNil(OOBShare.preview, @"预览图层默认为空");
     XCTAssertNotNil(self.targetImage, @"待识别图像不为空");
     XCTAssertNotNil(self.topVC, @"当前控制器不为空");
-    XCTAssertNotNil(OOBShare.sessionPreset, @"视频尺寸不为空");
-    XCTAssertTrue(OOBShare.cameraType == OOBCameraTypeBack, @"默认为后置摄像头");
-    XCTAssertTrue(OOBShare.markerCornerRadius >= 0.0f, @"切圆角半径不为负");
-    XCTAssertTrue(OOBShare.markerLineWidth >= 0.0f, @"标记线宽默认不为负");
-    XCTAssertTrue(OOBShare.similarValue <= 1.0f, @"相似度阈值小于等于1");
-    XCTAssertNotNil(OOBShare.rectMarkerImage, @"矩形标记图像可自动获取");
-    XCTAssertNotNil(OOBShare.ovalMarkerImage, @"椭圆标记图像可自动获取");
-    XCTAssertNotNil(OOBShare.markerLineColor, @"标记图像默认红色，不为空");
-}
-
-// 测试单例
-- (void)testShareOOB {
-    OOBTemplate *OOBShare = [OOBTemplate share];
-    OOBTemplate *OOBAlloc = [[OOBTemplate alloc]init];
-    OOBTemplate *OOBCopy = OOBShare.copy;
-    XCTAssertEqualObjects(OOBShare, OOBAlloc, @"Alloc 对象应该为单例");
-    XCTAssertEqualObjects(OOBShare, OOBCopy, @"Copy 对象应该为单例");
+    XCTAssertNil(OOBTemplate.cameraPreview, @"预览图层默认为空");
+    XCTAssertNotNil(OOBTemplate.cameraSessionPreset, @"视频尺寸不为空");
+    XCTAssertTrue(OOBTemplate.cameraType == OOBCameraTypeBack, @"默认为后置摄像头");
+    XCTAssertTrue(OOBTemplate.similarValue <= 1.0f, @"相似度阈值小于等于1");
+    UIImage *markImg = [OOBTemplate getRectWithSize:_targetImage.size Color:[UIColor redColor] Width:3 Radius:5];
+    XCTAssertNotNil(markImg, @"生产矩形标记视图");
 }
 
 // 测试图片中识别目标
 - (void)testMatchImg {
-    // screen_shot
     UIImage *bgImg = [UIImage imageNamed:@"screen_shot"];
     XCTAssertTrue(bgImg, @"背景图像不为空");
     XCTAssertTrue(self.targetImage, @"待识别图像不为空");
@@ -87,8 +73,7 @@
     [OOBTemplate matchImage:bgImg BgImg:bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
         XCTAssertTrue(similarValue > 0, @"相似度在 0 到 1 之间。");
     }];
-    
-    // 阈值超限
+    // 阈值超限，设为默认值 0.7
     [OOBTemplate matchImage:self.targetImage BgImg:bgImg Similar:1.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
         XCTAssertTrue(similarValue > 0.5, @"相似度在 0 到 1 之间。");
         XCTAssertTrue(targetRect.size.width > 0, @"目标宽度大于 0。");
@@ -110,42 +95,24 @@
     [self.topVC presentViewController:targetVC animated:NO completion:nil];
     
     // 设置预览图层
-    OOBTemplate *OOBShare = [OOBTemplate share];
-    OOBShare.preview = targetVC.view;
-    XCTAssertEqual(OOBShare.preview, targetVC.view, @"设置预览图层");
+    OOBTemplate.cameraPreview = targetVC.view;
+    XCTAssertEqual(OOBTemplate.cameraPreview, targetVC.view, @"设置预览图层");
     
     // 更换目标视图
     UIImage *bbImg = [UIImage imageNamed:@"bobantang"];
-    OOBShare.targetImg = bbImg;
-    XCTAssertNotEqual(OOBShare.targetImg, bbImg, @"设置目标图像去Alpha");
+    OOBTemplate.targetImg = bbImg;
+    XCTAssertNotEqual(OOBTemplate.targetImg, bbImg, @"设置目标图像去Alpha");
     
     // 切换摄像头
-    OOBShare.cameraType = OOBCameraTypeFront;
-    XCTAssertTrue(OOBShare.cameraType == OOBCameraTypeFront, @"设置前置摄像头");
+    OOBTemplate.cameraType = OOBCameraTypeFront;
+    XCTAssertTrue(OOBTemplate.cameraType == OOBCameraTypeFront, @"设置前置摄像头");
     
     // 设置摄像头预览质量
-    OOBShare.sessionPreset = AVCaptureSessionPresetLow;
-    XCTAssertTrue([OOBShare.sessionPreset isEqualToString:AVCaptureSessionPresetLow], @"设置图像质量");
+    OOBTemplate.cameraSessionPreset = AVCaptureSessionPresetLow;
+    XCTAssertTrue([OOBTemplate.cameraSessionPreset isEqualToString:AVCaptureSessionPresetLow], @"设置图像质量");
     
-    OOBShare.similarValue = 0.9;
-    XCTAssertEqual(OOBShare.similarValue, 0.9, @"图像对比相似度");
-    
-    OOBShare.markerLineWidth = 10.0;
-    XCTAssertEqual(OOBShare.markerLineWidth, 10.0, @"标记图像线条宽度");
-    
-    OOBShare.markerCornerRadius = 10.0;
-    XCTAssertEqual(OOBShare.markerCornerRadius, 10.0, @"标记图像线条圆角半径");
-    
-    // 设置标记图像为绿色
-    OOBShare.markerLineColor = [UIColor greenColor];
-    CGFloat red = 0.0; // 0 <= red <= 1
-    CGFloat green = 0.0;
-    CGFloat blue = 0.0;
-    CGFloat alpha = 0.0;
-    [OOBShare.markerLineColor getRed:&red green:&green blue:&blue alpha:&alpha];
-    XCTAssertTrue(red==0&&green==1&&blue==0&&alpha==1, @"标记图像默认绿色");
-    XCTAssertNotNil(OOBShare.rectMarkerImage, @"矩形标记图像");
-    XCTAssertNotNil(OOBShare.ovalMarkerImage, @"椭圆标记图像");
+    OOBTemplate.similarValue = 0.9;
+    XCTAssertEqual(OOBTemplate.similarValue, 0.9, @"图像对比相似度");
     // 测试视频流
     [self samRefTest];
 }
@@ -157,16 +124,16 @@
     [self.topVC presentViewController:targetVC animated:NO completion:nil];
     
     // 设置预览图层为空
-    OOBTemplate *OOBShare = [OOBTemplate share];
+    OOBTemplate.cameraPreview = nil;
     
     // 更换目标视图为空
     UIImage *tImg = [UIImage imageNamed:@"1235666"];
-    OOBShare.targetImg = tImg;
-    XCTAssertNil(OOBShare.targetImg, @"目标图像为空");
+    OOBTemplate.targetImg = tImg;
+    XCTAssertNil(OOBTemplate.targetImg, @"目标图像为空");
     
     // 设置相似度超限
-    OOBShare.similarValue = 1.9;
-    
+    OOBTemplate.similarValue = 1.9;
+    XCTAssertTrue(OOBTemplate.similarValue == 0.7, @"超限默认为 0.7");
     // 测试视频流
     [self samRefTest];
 }
@@ -177,7 +144,7 @@
         // 设置变量后测试
         NSDate *beginDate1 = [NSDate date];
         XCTestExpectation *expectation1 = [self expectationWithDescription:@"Camer should not open."];
-        [[OOBTemplate share] matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        [OOBTemplate matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
             BOOL similarValueNormal = (similarValue >= 0) && (similarValue <= 1);
             XCTAssertTrue(similarValueNormal, @"相似度在 0 到 1 之间。");
             NSTimeInterval timeDiff = [[NSDate date] timeIntervalSinceDate:beginDate1];
@@ -213,14 +180,16 @@
     // 开始读取 CMSampleBufferRef
     [self.assetReader startReading];
     // 定义回调 block
-    [[OOBTemplate share] matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+    [OOBTemplate matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
         BOOL similarValueNormal = (similarValue >= 0.5) && (similarValue <= 1);
         XCTAssertTrue(similarValueNormal, @"相似度在 0 到 1 之间。");
     }];
     
     CMSampleBufferRef samRef = [trackOutput copyNextSampleBuffer];
+    // 执行
+    OOBTemplate *sharedOOB = [[OOBTemplate alloc] init];
     SEL delegateSel = NSSelectorFromString(@"captureOutput:didOutputSampleBuffer:fromConnection:");
-    ((void (*) (id, SEL, AVCaptureOutput *, CMSampleBufferRef, AVCaptureConnection *)) objc_msgSend) ([OOBTemplate share], delegateSel, nil, samRef, nil);
+    ((void (*) (id, SEL, AVCaptureOutput *, CMSampleBufferRef, AVCaptureConnection *)) objc_msgSend) (sharedOOB, delegateSel, nil, samRef, nil);
     // 回到主页
     UIViewController *presentedVC = self.topVC.presentedViewController;
     [presentedVC dismissViewControllerAnimated:NO completion:nil];
