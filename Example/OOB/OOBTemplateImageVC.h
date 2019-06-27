@@ -9,13 +9,11 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "OOBTemplateBaseVC.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OOBTemplateImageVC : UIViewController
-
-// 需要识别的目标图像
-@property (nonatomic, strong) UIImage *targetImg;
+@interface OOBTemplateImageVC : OOBTemplateBaseVC
 
 // 在背景图像上查找目标图像
 @property (nonatomic, strong) UIImage *bgImg;

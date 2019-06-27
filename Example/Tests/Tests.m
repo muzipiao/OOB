@@ -45,7 +45,8 @@
 - (void)testInitialize{
     XCTAssertNotNil(self.targetImage, @"待识别图像不为空");
     XCTAssertNotNil(self.topVC, @"当前控制器不为空");
-    XCTAssertNil(OOBTemplate.cameraPreview, @"预览图层默认为空");
+    XCTAssertNil(OOBTemplate.bgPreview, @"预览图层默认为空");
+    XCTAssertNil(OOBTemplate.targetImg, @"目标图像默认为空");
     XCTAssertNotNil(OOBTemplate.cameraSessionPreset, @"视频尺寸不为空");
     XCTAssertTrue(OOBTemplate.cameraType == OOBCameraTypeBack, @"默认为后置摄像头");
     XCTAssertTrue(OOBTemplate.similarValue <= 1.0f, @"相似度阈值小于等于1");
@@ -53,26 +54,71 @@
     XCTAssertNotNil(markImg, @"生产矩形标记视图");
 }
 
-// 测试图片中识别目标
-- (void)testMatchImg {
+///MARK: - TEST IMAGE
+- (void)testImageDefaultSet {
     UIImage *bgImg = [UIImage imageNamed:@"screen_shot"];
-    XCTAssertTrue(bgImg, @"背景图像不为空");
-    XCTAssertTrue(self.targetImage, @"待识别图像不为空");
-    [OOBTemplate matchImage:self.targetImage BgImg:bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-        XCTAssertTrue(similarValue > 0.5, @"相似度在 0 到 1 之间。");
-        XCTAssertTrue(targetRect.size.width > 0, @"目标宽度大于 0。");
-        XCTAssertTrue(targetRect.size.height > 0, @"目标高度大于 0。");
+    XCTAssertNotNil(bgImg, @"背景图像不为空");
+    XCTAssertNotNil(self.targetImage, @"待识别图像不为空");
+    [self imageMatchTest:bgImg];
+}
+
+- (void)testImageUserSet {
+    UIImage *bgImg = [UIImage imageNamed:@"screen_shot"];
+    XCTAssertNotNil(bgImg, @"背景图像不为空");
+    XCTAssertNotNil(self.targetImage, @"待识别图像不为空");
+    // 测试设置预览图层
+    OOBTemplate.bgPreview = self.topVC.view;
+    [self imageMatchTest:bgImg];
+    // 测试设置相似度
+    OOBTemplate.similarValue = 0.9;
+    [self imageMatchTest:bgImg];
+    // 测试设置两者
+    OOBTemplate.similarValue = 0.8;
+    OOBTemplate.bgPreview = self.topVC.view;
+    [self imageMatchTest:bgImg];
+}
+
+- (void)testImageExpSimilarValueOverflow {
+    UIImage *bgImg = [UIImage imageNamed:@"screen_shot"];
+    XCTAssertNotNil(bgImg, @"背景图像不为空");
+    OOBTemplate.similarValue = 0.8;
+    [self imageMatchTest:bgImg];
+}
+
+- (void)testImageExpBigTgImg {
+    UIImage *bgImg = [UIImage imageNamed:@"screen_shot"];
+    XCTAssertNotNil(bgImg, @"背景图像不为空");
+    [OOBTemplate matchImage:bgImg BgImg:bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        XCTAssertTrue(similarValue > 0, @"相似度在 0 到 1 之间。");
     }];
-    // 测试图片为空
+}
+
+- (void)testImageExpImgNil {
+    UIImage *bgImg = [UIImage imageNamed:@"screen_shot"];
+    XCTAssertNotNil(bgImg, @"背景图像不为空");
+    XCTAssertNotNil(self.targetImage, @"待识别图像不为空");
+    // 测试目标图片为空
     UIImage *noImg = nil;
     [OOBTemplate matchImage:noImg BgImg:bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
         XCTAssertTrue(similarValue == 0, @"图片为空，相似度为 0。");
         XCTAssertTrue(CGRectEqualToRect(targetRect, CGRectZero), @"图片为空，Frame 为空");
     }];
-    // 测试大图片 screen_shot
-    [OOBTemplate matchImage:bgImg BgImg:bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-        XCTAssertTrue(similarValue > 0, @"相似度在 0 到 1 之间。");
+    
+    // 测试背景图片为空
+    UIImage *noBgImg = nil;
+    [OOBTemplate matchImage:self.targetImage BgImg:noBgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        XCTAssertTrue(similarValue == 0, @"图片为空，相似度为 0。");
+        XCTAssertTrue(CGRectEqualToRect(targetRect, CGRectZero), @"图片为空，Frame 为空");
     }];
+    
+    // 测试二者都是 nil
+    [OOBTemplate matchImage:noImg BgImg:noBgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        XCTAssertTrue(similarValue == 0, @"图片为空，相似度为 0。");
+        XCTAssertTrue(CGRectEqualToRect(targetRect, CGRectZero), @"图片为空，Frame 为空");
+    }];
+}
+
+- (void)imageMatchTest:(UIImage *)bgImg{
     // 阈值超限，设为默认值 0.7
     [OOBTemplate matchImage:self.targetImage BgImg:bgImg Similar:1.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
         XCTAssertTrue(similarValue > 0.5, @"相似度在 0 到 1 之间。");
@@ -81,25 +127,87 @@
     }];
 }
 
-// 测试相机默认设置
-- (void)testDefaultMatchCamera {
+///MARK: - TEST VIDEO
+- (void)testVideoDefaultSet {
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
+    XCTAssertNotNil(url, @"待测视频不能为空");
+    [self videoOutputTest:url];
+}
+
+- (void)testVideoUserSet {
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
+    XCTAssertNotNil(url, @"待测视频不能为空");
+    OOBTemplate.bgPreview = self.topVC.view;
+    OOBTemplate.similarValue = 0.9;
+    [self videoOutputTest:url];
+    // 更换相似度
+    OOBTemplate.similarValue = 0.8;
+    // 更换目标
+    OOBTemplate.targetImg = [UIImage imageNamed:@"caomeicui"];
+}
+
+- (void)testVideoExpUrlNil {
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"nnnnnnn.m4v" withExtension:nil];
+    XCTAssertNil(url, @"测试视频为空");
+    [OOBTemplate matchVideo:self.targetImage VideoURL:url resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {}];
+}
+
+- (void)testVideoExpBgViewNil {
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
+    XCTAssertNotNil(url, @"待测视频不能为空");
+    OOBTemplate.bgPreview = nil;
+    [self videoOutputTest:url];
+}
+
+- (void)testVideoExpTgImgNil {
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
+    XCTAssertNotNil(url, @"待测视频不能为空");
+    [OOBTemplate matchVideo:self.targetImage VideoURL:url resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
+        XCTAssertTrue(CGRectIsEmpty(targetRect), @"目标图像为空，目标 CGRectZero。");
+        XCTAssertTrue(similarValue == 0, @"目标图像为空，相似度为 0。");
+        XCTAssertNil(frameImg, @"获取视频帧为空");
+    }];
+}
+
+- (void)testVideoExpSimilarValueOverflow {
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
+    XCTAssertNotNil(url, @"待测视频不能为空");
+    // 设置相似度超限
+    OOBTemplate.similarValue = 1.9;
+    XCTAssertTrue(OOBTemplate.similarValue == 0.7, @"超限默认为 0.7");
+    [self videoOutputTest:url];
+}
+
+- (void)videoOutputTest:(NSURL *)url{
     // 测试视频流
-    [self samRefTest];
+    [OOBTemplate matchVideo:self.targetImage VideoURL:url resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
+        XCTAssertTrue(similarValue >= 0, @"相似度在 0 到 1 之间。");
+        XCTAssertTrue(similarValue <= 1, @"相似度在 0 到 1 之间。");
+        XCTAssertTrue(targetRect.size.width >= 0, @"目标宽度大于等于 0。");
+        XCTAssertTrue(targetRect.size.height >= 0, @"目标高度大于等于 0。");
+        XCTAssertNotNil(frameImg, @"获取视频帧不为空");
+    }];
+}
+
+///MARK: - TEST CAMERA
+- (void)testCameraDefaultSet{
+    // 测试视频流
+    [self captureOutputTest];
 }
 
 // 测试相机用户自定义设置
-- (void)testUserSetMatchCamera
+- (void)testCameraUserSet
 {
     UIViewController *targetVC = [[UIViewController alloc]init];
     targetVC.view.backgroundColor = [UIColor whiteColor];
     [self.topVC presentViewController:targetVC animated:NO completion:nil];
     
     // 设置预览图层
-    OOBTemplate.cameraPreview = targetVC.view;
-    XCTAssertEqual(OOBTemplate.cameraPreview, targetVC.view, @"设置预览图层");
+    OOBTemplate.bgPreview = targetVC.view;
+    XCTAssertEqual(OOBTemplate.bgPreview, targetVC.view, @"设置预览图层");
     
     // 更换目标视图
-    UIImage *bbImg = [UIImage imageNamed:@"bobantang"];
+    UIImage *bbImg = [UIImage imageNamed:@"caomeicui"];
     OOBTemplate.targetImg = bbImg;
     XCTAssertNotEqual(OOBTemplate.targetImg, bbImg, @"设置目标图像去Alpha");
     
@@ -114,39 +222,46 @@
     OOBTemplate.similarValue = 0.9;
     XCTAssertEqual(OOBTemplate.similarValue, 0.9, @"图像对比相似度");
     // 测试视频流
-    [self samRefTest];
+    [self captureOutputTest];
+    
+    // 切换摄像头
+    OOBTemplate.cameraType = OOBCameraTypeBack;
+    XCTAssertTrue(OOBTemplate.cameraType == OOBCameraTypeBack, @"设置后置置摄像头");
 }
 
-// 测试视频的异常情况
-- (void)testExceptionMatchCamera{
-    UIViewController *targetVC = [[UIViewController alloc]init];
-    targetVC.view.backgroundColor = [UIColor whiteColor];
-    [self.topVC presentViewController:targetVC animated:NO completion:nil];
-    
+- (void)testCameraExpBgViewNil {
     // 设置预览图层为空
-    OOBTemplate.cameraPreview = nil;
-    
+    OOBTemplate.bgPreview = nil;
+    // 测试视频流
+    [self captureOutputTest];
+}
+
+- (void)testCameraExpTgImgNil {
+    // 测试视频流
+    [self captureOutputTest];
     // 更换目标视图为空
     UIImage *tImg = [UIImage imageNamed:@"1235666"];
     OOBTemplate.targetImg = tImg;
     XCTAssertNil(OOBTemplate.targetImg, @"目标图像为空");
-    
+}
+
+- (void)testCameraExpSimilarValueOverflow {
     // 设置相似度超限
     OOBTemplate.similarValue = 1.9;
     XCTAssertTrue(OOBTemplate.similarValue == 0.7, @"超限默认为 0.7");
     // 测试视频流
-    [self samRefTest];
+    [self captureOutputTest];
 }
 
--(void)samRefTest{
+-(void)captureOutputTest{
     // 如果是真机
     if (TARGET_OS_SIMULATOR != 1) {
         // 设置变量后测试
         NSDate *beginDate1 = [NSDate date];
         XCTestExpectation *expectation1 = [self expectationWithDescription:@"Camer should not open."];
         [OOBTemplate matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-            BOOL similarValueNormal = (similarValue >= 0) && (similarValue <= 1);
-            XCTAssertTrue(similarValueNormal, @"相似度在 0 到 1 之间。");
+            XCTAssertTrue(similarValue >= 0, @"相似度在 0 到 1 之间。");
+            XCTAssertTrue(similarValue <= 1, @"相似度在 0 到 1 之间。");
             NSTimeInterval timeDiff = [[NSDate date] timeIntervalSinceDate:beginDate1];
             if (timeDiff > 2.0) {
                 [expectation1 fulfill];
@@ -181,8 +296,10 @@
     [self.assetReader startReading];
     // 定义回调 block
     [OOBTemplate matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-        BOOL similarValueNormal = (similarValue >= 0.5) && (similarValue <= 1);
-        XCTAssertTrue(similarValueNormal, @"相似度在 0 到 1 之间。");
+        XCTAssertTrue(similarValue >= 0, @"相似度在 0 到 1 之间。");
+        XCTAssertTrue(similarValue <= 1, @"相似度在 0 到 1 之间。");
+        XCTAssertTrue(targetRect.size.width >= 0, @"目标宽度大于等于 0。");
+        XCTAssertTrue(targetRect.size.height >= 0, @"目标高度大于等于 0。");
     }];
     
     CMSampleBufferRef samRef = [trackOutput copyNextSampleBuffer];

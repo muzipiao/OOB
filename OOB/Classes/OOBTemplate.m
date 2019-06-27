@@ -47,7 +47,7 @@ typedef void (^VideoResultBlock) (CGRect, CGFloat, UIImage *);
 @property (nonatomic, assign) OOBType oobType;
 // 读取视频CMSampleBufferRef
 @property (nonatomic, strong) AVAssetReader *assetReader;
-// 预览视频图层,如果没有设置 cameraPreview,则不显示，获取的坐标默认为全屏坐标。
+// 预览视频图层,如果没有设置 bgPreview,则不显示，获取的坐标默认为全屏坐标。
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic, strong) AVCaptureSession *session;
 @property (nonatomic, strong) AVCaptureDeviceInput *frontCameraInput;
@@ -117,15 +117,11 @@ static OOBTemplate *instance;
     }
 }
 
-+ (UIView *)cameraPreview{
++ (UIView *)bgPreview{
     return [OOBTemplate share].preview;
 }
-+ (void)setCameraPreview:(UIView *)cameraPreview{
-    if ([OOBTemplate share].oobType != OOBTypeCamera) {
-        OOBLog(@"非识别摄像头目标，不支持设置 cameraPreview。");
-        return;
-    }
-    [OOBTemplate share].preview = cameraPreview;
++ (void)setBgPreview:(UIView *)bgPreview{
+    [OOBTemplate share].preview = bgPreview;
 }
 
 + (OOBCameraType)cameraType{
@@ -197,28 +193,6 @@ static OOBTemplate *instance;
 }
 
 /**
- * 设置预览视图
- */
--(void)setPreview:(UIView *)preview{
-    _preview = preview;
-    [self.session stopRunning];
-    if (_previewLayer) {
-        [_previewLayer removeFromSuperlayer];
-    }
-    AVCaptureVideoPreviewLayer *previewLayer = [[AVCaptureVideoPreviewLayer alloc]initWithSession:self.session];
-    if (preview) {
-        previewLayer.frame = preview.bounds;
-        previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-        // 预览图层添加到最底部
-        [preview.layer insertSublayer:previewLayer atIndex:0];
-    }else{
-        previewLayer.frame = CGRectZero;
-    }
-    _previewLayer = previewLayer;
-    [self.session startRunning];
-}
-
-/**
  * 设置预览视频质量
  */
 -(void)setSessionPreset:(AVCaptureSessionPreset)sessionPreset{
@@ -247,8 +221,31 @@ static OOBTemplate *instance;
 + (void)matchCamera:(UIImage *)targetImg resultBlock:(void (^)(CGRect, CGFloat))resultBlock{
     [OOBTemplate share].oobType = OOBTypeCamera; // 标记为相机
     [OOBTemplate share].targetImg = targetImg;
+    if (![OOBTemplate share].targetImg) {
+        resultBlock(CGRectZero, 0);
+        return;
+    }
     [OOBTemplate share].cameraResultBlock = resultBlock;
-    [[OOBTemplate share].session startRunning];
+    [[OOBTemplate share] matchCamera];
+}
+
+// 开始识别相机视频流中目标
+- (void)matchCamera{
+    [self.session stopRunning];
+    if (_previewLayer) {
+        [_previewLayer removeFromSuperlayer];
+    }
+    AVCaptureVideoPreviewLayer *previewLayer = [[AVCaptureVideoPreviewLayer alloc]initWithSession:self.session];
+    if (self.preview) {
+        previewLayer.frame = self.preview.bounds;
+        previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        // 预览图层添加到最底部
+        [self.preview.layer insertSublayer:previewLayer atIndex:0];
+    }else{
+        previewLayer.frame = CGRectZero;
+    }
+    _previewLayer = previewLayer;
+    [self.session startRunning];
 }
 
 /**
@@ -260,6 +257,10 @@ static OOBTemplate *instance;
 + (void)matchVideo:(UIImage *)targetImg VideoURL:(NSURL *)vURL resultBlock:(void (^)(CGRect, CGFloat, UIImage * _Nullable))resultBlock{
     [OOBTemplate share].oobType = OOBTypeVideo; // 标记为视频
     [OOBTemplate share].targetImg = targetImg; // 移除Alpha通道
+    if (![OOBTemplate share].targetImg) {
+        resultBlock(CGRectZero, 0, nil);
+        return;
+    }
     [OOBTemplate share].videoResultBlock = resultBlock;
     [[OOBTemplate share] matchVideoWithURL:vURL];
 }
@@ -309,8 +310,23 @@ static OOBTemplate *instance;
             CGRect tgRect = CGRectFromString([tgDict objectForKey:kTargetRect]);
             CGFloat realSimilarValue = [[tgDict objectForKey:kSimilarValue] floatValue];
             dispatch_async(dispatch_get_main_queue(), ^{
+                /**
+                 * 显示返回的视频图像，载体视图和视频图像宽度不同会变形，需要矫正
+                 */
+                CGRect reTgRect = tgRect;
+                if (self.preview) {
+                    CGSize frameSize = frameImg.size;
+                    CGSize bgViewSize = self.preview.frame.size;
+                    CGFloat scaleX = bgViewSize.width / frameSize.width;
+                    CGFloat scaleY = bgViewSize.height / frameSize.height;
+                    CGFloat tgX = tgRect.origin.x * scaleX;
+                    CGFloat tgY = tgRect.origin.y * scaleY;
+                    CGFloat tgW = tgRect.size.width * scaleX;
+                    CGFloat tgH = tgRect.size.height * scaleY;
+                    reTgRect = CGRectMake(tgX, tgY, tgW, tgH);
+                }
                 if (self.videoResultBlock) {
-                    self.videoResultBlock(tgRect, realSimilarValue, frameImg);
+                    self.videoResultBlock(reTgRect, realSimilarValue, frameImg);
                 }
                 // 释放 CMSampleBufferRef
                 if (samBufRef) {
@@ -333,22 +349,37 @@ static OOBTemplate *instance;
  @param resultBlock 识别结果，分别是目标位置和实际的相似度
  */
 + (void)matchImage:(UIImage *)targetImg BgImg:(UIImage *)backgroudImg Similar:(CGFloat)minSimilarValue resultBlock:(void (^)(CGRect, CGFloat))resultBlock{
+    [OOBTemplate share].oobType = OOBTypeImage; // 标记为图片
     if (minSimilarValue > 1 || minSimilarValue < 0) {
         minSimilarValue = kDefaultSimilarValue; // 取默认值
+    }
+    if (!targetImg || !backgroudImg) {
+        resultBlock(CGRectZero, 0);
+        return;
     }
     NSDictionary *targetDict = [OOBTemplateHelper locInImg:backgroudImg TargetImg:targetImg SimilarValue:minSimilarValue];
     CGRect targetRect = CGRectFromString([targetDict objectForKey:kTargetRect]);
     // 根据背景视图的 Scale 将像素变换为苹果坐标系
     CGFloat bgScale = backgroudImg.scale;
-    CGFloat tgX = targetRect.origin.x / bgScale;
-    CGFloat tgY = targetRect.origin.y / bgScale;
-    CGFloat tgW = targetRect.size.width / bgScale;
-    CGFloat tgH = targetRect.size.height / bgScale;
+    // 校正背景视图变形引起的坐标变换
+    CGFloat tgScaleX = 1.0;
+    CGFloat tgScaleY = 1.0;
+    if (OOBTemplate.bgPreview) {
+        CGSize bgImgSize = backgroudImg.size;
+        CGSize bgViewSize = OOBTemplate.bgPreview.frame.size;
+        tgScaleX = bgViewSize.width / bgImgSize.width;
+        tgScaleY = bgViewSize.height / bgImgSize.height;
+    }
+    CGFloat tgX = targetRect.origin.x * tgScaleX / bgScale;
+    CGFloat tgY = targetRect.origin.y * tgScaleY / bgScale;
+    CGFloat tgW = targetRect.size.width * tgScaleX / bgScale;
+    CGFloat tgH = targetRect.size.height * tgScaleY / bgScale;
     CGRect scaleRect = CGRectMake(tgX, tgY, tgW, tgH);
     CGFloat similarValue = [[targetDict objectForKey:kSimilarValue] floatValue];
     if (resultBlock) {
         resultBlock(scaleRect, similarValue);
     }
+    [OOBTemplate stopMatch]; // 恢复初始值
 }
 
 ///MARK: - AVCaptureVideoDataOutputSampleBufferDelegate

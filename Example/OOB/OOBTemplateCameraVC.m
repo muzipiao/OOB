@@ -11,12 +11,6 @@
 
 @interface OOBTemplateCameraVC ()
 
-// 标记目标的图片框，用户可自定义
-@property (nonatomic, strong) UIImageView *markView;
-
-// 显示相似度标签
-@property (nonatomic, strong) UILabel *similarLabel;
-
 @end
 
 @implementation OOBTemplateCameraVC
@@ -54,7 +48,7 @@
  */
 -(void)startReco{
     // 设置视频预览图层
-    OOBTemplate.cameraPreview = self.view;
+    OOBTemplate.bgPreview = self.view;
     // 添加标记图像 ImageView 在预览图层中
     [self.view addSubview:self.markView];
     // 调整对比的相似度在 80% 以上
@@ -77,33 +71,6 @@
             self.markView.hidden = YES;
         }
     }];
-}
-
-// 标记图像
--(UIImageView *)markView{
-    if (!_markView) {
-        // 更改矩形框颜色为深红色：R=254 G=67 B=101
-        UIColor *darkRed = [UIColor colorWithRed:254.0/255.0 green:67.0/255.0 blue:101.0/255.0 alpha:1.0];
-        UIImage *img = [OOBTemplate getRectWithSize:_targetImg.size Color:darkRed Width:3 Radius:5]; // 设置标记图像为矩形
-        UIImageView *markerImgView = [[UIImageView alloc]initWithImage:img];
-        [markerImgView sizeToFit];
-        markerImgView.hidden = YES;
-        _markView = markerImgView;
-    }
-    return _markView;
-}
-
-// 相似度标签
--(UILabel *)similarLabel{
-    if (!_similarLabel) {
-        UILabel *simLabel = [[UILabel alloc]init];
-        simLabel.text = @"与目标相似度：0 %";
-        simLabel.textAlignment = NSTextAlignmentCenter;
-        simLabel.font = [UIFont systemFontOfSize:14];
-        [simLabel sizeToFit];
-        _similarLabel = simLabel;
-    }
-    return _similarLabel;
 }
 
 @end

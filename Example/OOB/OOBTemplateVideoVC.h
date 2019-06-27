@@ -7,13 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "OOBTemplateBaseVC.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OOBTemplateVideoVC : UIViewController
-
-// 需要识别的目标图像
-@property (nonatomic, strong) UIImage *targetImg;
+@interface OOBTemplateVideoVC : OOBTemplateBaseVC
 
 @end
 

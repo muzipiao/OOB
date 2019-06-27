@@ -41,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * 识别图片中的目标，并返回目标在图片中的位置，实际相似度
- * 注意：返回的 Frame 是相对于图片的，如果要做标记，根据图片在 UImageView 中的 X、Y 方向缩放比例换算，具体参考 Demo 中 OOBTemplateImageVC 的示例。
  @param targetImg 待识别的目标图像
  @param backgroudImg 背景图像，在背景图像上搜索目标是否存在
  @param minSimilarValue 要求的相似度，取值在 0 到 1 之间，1 为最大，越接近 1 表示要求越高
@@ -49,7 +48,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)matchImage:(UIImage *)targetImg BgImg:(UIImage *)backgroudImg Similar:(CGFloat)minSimilarValue resultBlock:(void (^)(CGRect targetRect, CGFloat similarValue))resultBlock;
 
-///MARK: - 其他可选属性
+/**
+ * 摄像头视频流，视频文件，背景图预览视图。
+ * 识别摄像头目标时，不设置不显示预览视频，获取的 CGRect 坐标默认为全屏坐标。
+ * 识别视频文件或者图片中目标时，若不设置，视频或者图片需 100% 比例展示，即 sizeToFit。
+ */
+@property (class, nullable, nonatomic, strong) UIView *bgPreview;
+
 /**
  * 待识别的目标图像,可随时切换待识别目标。
  */
@@ -62,11 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, assign) CGFloat similarValue;
 
 ///MARK: - 识别摄像头目标可选属性
-/**
- * 视频预览视图，不设置不显示预览视频，获取的坐标默认为全屏坐标。
- */
-@property (class, nullable, nonatomic, strong) UIView *cameraPreview;
-
 /**
  * 前置后置摄像头切换，设置可切换摄像头，默认后置摄像头.
  */
