@@ -10,9 +10,19 @@
 ![识别图片](https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/jitui.PNG)
 ![识别视频](https://raw.githubusercontent.com/muzipiao/GitHubImages/master/OpenCVImg/OOB/apple_video.gif)
 
-## 示例
+## 快速开始
 
-下载分支后，先 `cd` 切换到当前 Example 文件夹目录下，然后执行 `pod install` ，完成后打开 `OOB.xcworkspace` 文件运行。
+在终端运行以下命令:
+
+```ruby
+git clone https://github.com/muzipiao/OOB.git
+
+cd OOB/Example 
+
+pod install 
+
+open OOB.xcworkspace
+```
 
 注意：由于 opencv2.framework 压缩包较大（约 146MB），网速比较慢的情况下，下载时间会较长；个别网络（如长城宽带）会一直下载失败，这种情况可切换至其他网络下载或手动集成。
 
@@ -23,11 +33,11 @@
 * UIKit.framework
 * AVFoundation.framework
 
-## 安装
+## 集成
 
 ### CocoaPods
 
-CocoaPods 是最简单方便的安装方法，编辑 Podfile 文件，添加
+CocoaPods 是最简单方便的集成方法，编辑 Podfile 文件，添加
 
 ```ruby
 pod 'OOB'
@@ -35,9 +45,9 @@ pod 'OOB'
 
 然后执行 `pod install` 即可。
 
-### 直接安装
+### 直接集成
 
-1. 直接安装 `OOB` 前，请先安装 `OpenCV`，参考我的一篇博客：[iOS集成OpenCV博客](http://cocoafei.top/2017/07/iOS-%E9%9B%86%E6%88%90-OpenCV/)
+1. 直接集成 `OOB` 前，请先集成 `OpenCV`，参考我的一篇博客：[iOS集成OpenCV博客](http://cocoafei.top/2017/07/iOS-%E9%9B%86%E6%88%90-OpenCV/)
 2. 从 Git 下载最新代码，找到和 README 同级的 OOB 文件夹，将 OOB 文件夹拖入项目即可。
 3. 在需要使用的地方导入 `#import "OOB.h"` 即可。
 
@@ -72,7 +82,7 @@ OOBTemplate.preview = self.view;
  */
 [OOBTemplate matchCamera:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
     OOBLog(@"与背景中目标的相似度：%.0f %%",similarValue * 100);
-    OOBLog(@"摄像头视频流中目标 Rect:%@",NSStringFromCGRect(targetRect));
+    OOBLog(@"摄像头视频流中目标 Rect：%@",NSStringFromCGRect(targetRect));
 }];
 ```
 
@@ -93,7 +103,8 @@ NSURL *vdUrl = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtens
  */
 [OOBTemplate matchVideo:self.targetImg VideoURL:vdUrl resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
     OOBLog(@"与背景中目标的相似度：%.0f %%",similarValue * 100);
-    OOBLog(@"摄像头视频流中目标 Rect:%@",NSStringFromCGRect(targetRect));
+    OOBLog(@"摄像头视频流中目标 Rect：%@",NSStringFromCGRect(targetRect));
+    OOBLog(@"当前视频帧图像：%@",frameImg);
 }];
 ```
 
@@ -108,13 +119,8 @@ NSURL *vdUrl = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtens
  * similarValue 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
  */
 [OOBTemplate matchImage:self.targetImg BgImg:self.bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-    self.similarLabel.text = [NSString stringWithFormat:@"相似度：%.0f %%",similarValue * 100];
-    if (similarValue > 0.7) {
-        self.markView.frame = targetRect;
-        self.markView.hidden = NO;
-    }else{
-        self.markView.hidden = YES;
-    }
+    OOBLog(@"与背景中目标的相似度：%.0f %%",similarValue * 100);
+    OOBLog(@"摄像头视频流中目标 Rect：%@",NSStringFromCGRect(targetRect));
 }];
 ```
 
