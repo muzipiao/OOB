@@ -8,6 +8,7 @@
 
 @import XCTest;
 #import "OOB.h"
+#import "OOBTemplateHelper.h"
 #import <objc/message.h>
 
 @interface Tests : XCTestCase
@@ -149,7 +150,20 @@
 - (void)testVideoExpUrlNil {
     NSURL *url = [[NSBundle mainBundle] URLForResource:@"nnnnnnn.m4v" withExtension:nil];
     XCTAssertNil(url, @"测试视频为空");
-    [OOBTemplate matchVideo:self.targetImage VideoURL:url resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {}];
+    //测试异步视频流
+    XCTestExpectation *expVideoNil = [self expectationWithDescription:@"Can't read video sampleBuffer."];
+    // 测试视频流
+    [OOBTemplate matchVideo:self.targetImage VideoURL:url resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
+        XCTAssertTrue(CGRectIsEmpty(targetRect), @"目标图像为空，目标 CGRectZero。");
+        XCTAssertTrue(similarValue == 0, @"目标图像为空，相似度为 0。");
+        XCTAssertNil(frameImg, @"获取视频帧为空");
+        [expVideoNil fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"expVideoNil=%@",error);
+        }
+    }];
 }
 
 - (void)testVideoExpBgViewNil {
@@ -162,10 +176,20 @@
 - (void)testVideoExpTgImgNil {
     NSURL *url = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
     XCTAssertNotNil(url, @"待测视频不能为空");
-    [OOBTemplate matchVideo:self.targetImage VideoURL:url resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
+    UIImage *tgImgNil = nil;
+    //测试异步视频流
+    XCTestExpectation *expVideoTgImgNil = [self expectationWithDescription:@"Can't read video sampleBuffer."];
+    // 测试视频流
+    [OOBTemplate matchVideo:tgImgNil VideoURL:url resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
         XCTAssertTrue(CGRectIsEmpty(targetRect), @"目标图像为空，目标 CGRectZero。");
         XCTAssertTrue(similarValue == 0, @"目标图像为空，相似度为 0。");
         XCTAssertNil(frameImg, @"获取视频帧为空");
+        [expVideoTgImgNil fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"expVideoTgImgNil=%@",error);
+        }
     }];
 }
 
@@ -179,6 +203,8 @@
 }
 
 - (void)videoOutputTest:(NSURL *)url{
+    //测试异步视频流
+    XCTestExpectation *expVideoOutput = [self expectationWithDescription:@"Can't read video sampleBuffer."];
     // 测试视频流
     [OOBTemplate matchVideo:self.targetImage VideoURL:url resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
         XCTAssertTrue(similarValue >= 0, @"相似度在 0 到 1 之间。");
@@ -186,13 +212,19 @@
         XCTAssertTrue(targetRect.size.width >= 0, @"目标宽度大于等于 0。");
         XCTAssertTrue(targetRect.size.height >= 0, @"目标高度大于等于 0。");
         XCTAssertNotNil(frameImg, @"获取视频帧不为空");
+        [expVideoOutput fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"expVideoOutput=%@",error);
+        }
     }];
 }
 
 ///MARK: - TEST CAMERA
 - (void)testCameraDefaultSet{
     // 测试视频流
-    [self captureOutputTest];
+    [self captureOutputTest:self.targetImage];
 }
 
 // 测试相机用户自定义设置
@@ -222,7 +254,7 @@
     OOBTemplate.similarValue = 0.9;
     XCTAssertEqual(OOBTemplate.similarValue, 0.9, @"图像对比相似度");
     // 测试视频流
-    [self captureOutputTest];
+    [self captureOutputTest:bbImg];
     
     // 切换摄像头
     OOBTemplate.cameraType = OOBCameraTypeBack;
@@ -233,12 +265,26 @@
     // 设置预览图层为空
     OOBTemplate.bgPreview = nil;
     // 测试视频流
-    [self captureOutputTest];
+    [self captureOutputTest:self.targetImage];
 }
 
 - (void)testCameraExpTgImgNil {
+    // 测试目标为空
+    UIImage *tImg = nil;
+    [self captureOutputTest:tImg];
+}
+
+- (void)testCameraExpChangeTgImg {
     // 测试视频流
-    [self captureOutputTest];
+    [self captureOutputTest:self.targetImage];
+    // 更换目标视图为空
+    UIImage *tImg = [UIImage imageNamed:@"caomeicui"];
+    OOBTemplate.targetImg = tImg;
+}
+
+- (void)testCameraExpChangeTgImgNil {
+    // 测试视频流
+    [self captureOutputTest:self.targetImage];
     // 更换目标视图为空
     UIImage *tImg = [UIImage imageNamed:@"1235666"];
     OOBTemplate.targetImg = tImg;
@@ -250,16 +296,16 @@
     OOBTemplate.similarValue = 1.9;
     XCTAssertTrue(OOBTemplate.similarValue == 0.7, @"超限默认为 0.7");
     // 测试视频流
-    [self captureOutputTest];
+    [self captureOutputTest:self.targetImage];
 }
 
--(void)captureOutputTest{
+-(void)captureOutputTest:(UIImage *)tgImg{
     // 如果是真机
     if (TARGET_OS_SIMULATOR != 1) {
         // 设置变量后测试
         NSDate *beginDate1 = [NSDate date];
         XCTestExpectation *expectation1 = [self expectationWithDescription:@"Camer should not open."];
-        [OOBTemplate matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        [OOBTemplate matchCamera:tgImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
             XCTAssertTrue(similarValue >= 0, @"相似度在 0 到 1 之间。");
             XCTAssertTrue(similarValue <= 1, @"相似度在 0 到 1 之间。");
             NSTimeInterval timeDiff = [[NSDate date] timeIntervalSinceDate:beginDate1];
@@ -279,6 +325,75 @@
     }
     
     // 如果是模拟器
+    NSNumber *yuvNum = [NSNumber numberWithUnsignedInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange];
+    AVAssetReaderTrackOutput *trackOutput = [self createTrackOutput:yuvNum];
+    // 开始读取 CMSampleBufferRef
+    [self.assetReader startReading];
+    // 定义回调 block
+    [OOBTemplate matchCamera:tgImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
+        XCTAssertTrue(similarValue >= 0, @"相似度在 0 到 1 之间。");
+        XCTAssertTrue(similarValue <= 1, @"相似度在 0 到 1 之间。");
+        XCTAssertTrue(targetRect.size.width >= 0, @"目标宽度大于等于 0。");
+        XCTAssertTrue(targetRect.size.height >= 0, @"目标高度大于等于 0。");
+    }];
+    
+    CMSampleBufferRef samBufRef = [trackOutput copyNextSampleBuffer];
+    // 执行
+    OOBTemplate *sharedOOB = [[OOBTemplate alloc] init];
+    OOBTemplate *copyedOOB = sharedOOB.copy;
+    XCTAssertEqual(sharedOOB, copyedOOB, @"OOBTemplate 为单例对象");
+    SEL delegateSel = NSSelectorFromString(@"captureOutput:didOutputSampleBuffer:fromConnection:");
+    ((void (*) (id, SEL, AVCaptureOutput *, CMSampleBufferRef, AVCaptureConnection *)) objc_msgSend) (sharedOOB, delegateSel, nil, samBufRef, nil);
+    // 回到主页
+    UIViewController *presentedVC = self.topVC.presentedViewController;
+    [presentedVC dismissViewControllerAnimated:NO completion:nil];
+    // 释放 CMSampleBufferRef
+    if (samBufRef) {
+        CMSampleBufferInvalidate(samBufRef);
+        CFRelease(samBufRef);
+    }
+}
+
+///MARK: - TEST HELPER
+- (void)testHelperSamBufFormat {
+    // 测试视频格式
+    NSNumber *bgrNum = [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA];
+    AVAssetReaderTrackOutput *trackOutput = [self createTrackOutput:bgrNum];
+    // 开始读取 CMSampleBufferRef
+    [self.assetReader startReading];
+    CMSampleBufferRef samBufRef = [trackOutput copyNextSampleBuffer];
+    NSDictionary *locDict = [OOBTemplateHelper locInVideo:samBufRef TemplateImg:self.targetImage SimilarValue:0.8];
+    XCTAssertNil(locDict, @"Only YUV is supported");
+    // 释放 CMSampleBufferRef
+    if (samBufRef) {
+        CMSampleBufferInvalidate(samBufRef);
+        CFRelease(samBufRef);
+    }
+}
+
+- (void)testHelperSamBufNil {
+    // 测试 Buffer 为 NULL
+    CMSampleBufferRef samBufRefNull = NULL;
+    NSDictionary *bufNullDict = [OOBTemplateHelper locInVideo:samBufRefNull TemplateImg:self.targetImage SimilarValue:0.8];
+    XCTAssertNil(bufNullDict, @"Target image can't be nil.");
+    // 测试目标图像为空
+    NSNumber *yuvNum = [NSNumber numberWithUnsignedInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange];
+    AVAssetReaderTrackOutput *trackOutput = [self createTrackOutput:yuvNum];
+    // 开始读取 CMSampleBufferRef
+    [self.assetReader startReading];
+    CMSampleBufferRef samBufRef = [trackOutput copyNextSampleBuffer];
+    UIImage *tgImg = nil;
+    NSDictionary *tgNilDict = [OOBTemplateHelper locInVideo:samBufRef TemplateImg:tgImg SimilarValue:0.8];
+    XCTAssertNil(tgNilDict, @"Target image can't be nil.");
+    // 释放 CMSampleBufferRef
+    if (samBufRef) {
+        CMSampleBufferInvalidate(samBufRef);
+        CFRelease(samBufRef);
+    }
+}
+
+- (AVAssetReaderTrackOutput *)createTrackOutput:(NSNumber *)formatNum{
+    // 如果是模拟器
     NSURL *url = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
     XCTAssertNotNil(url, @"待测视频不能为空");
     // 获取视频CMSampleBufferRef
@@ -287,29 +402,11 @@
     AVAssetTrack *track = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     self.assetReader = [[AVAssetReader alloc] initWithAsset:asset error:nil];
     // 设置输出格式kCVPixelBufferWidthKey kCVPixelBufferHeightKey
-    NSDictionary *readerOutputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                          [NSNumber numberWithUnsignedInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange],                                   kCVPixelBufferPixelFormatTypeKey,nil];
+    NSDictionary *readerOutputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:formatNum, kCVPixelBufferPixelFormatTypeKey,nil];
     
     AVAssetReaderTrackOutput *trackOutput = [[AVAssetReaderTrackOutput alloc] initWithTrack:track outputSettings:readerOutputSettings];
     [self.assetReader addOutput:trackOutput];
-    // 开始读取 CMSampleBufferRef
-    [self.assetReader startReading];
-    // 定义回调 block
-    [OOBTemplate matchCamera:self.targetImage resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-        XCTAssertTrue(similarValue >= 0, @"相似度在 0 到 1 之间。");
-        XCTAssertTrue(similarValue <= 1, @"相似度在 0 到 1 之间。");
-        XCTAssertTrue(targetRect.size.width >= 0, @"目标宽度大于等于 0。");
-        XCTAssertTrue(targetRect.size.height >= 0, @"目标高度大于等于 0。");
-    }];
-    
-    CMSampleBufferRef samRef = [trackOutput copyNextSampleBuffer];
-    // 执行
-    OOBTemplate *sharedOOB = [[OOBTemplate alloc] init];
-    SEL delegateSel = NSSelectorFromString(@"captureOutput:didOutputSampleBuffer:fromConnection:");
-    ((void (*) (id, SEL, AVCaptureOutput *, CMSampleBufferRef, AVCaptureConnection *)) objc_msgSend) (sharedOOB, delegateSel, nil, samRef, nil);
-    // 回到主页
-    UIViewController *presentedVC = self.topVC.presentedViewController;
-    [presentedVC dismissViewControllerAnimated:NO completion:nil];
+    return trackOutput;
 }
 
 @end

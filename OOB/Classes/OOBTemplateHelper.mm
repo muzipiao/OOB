@@ -55,11 +55,6 @@ static CGFloat videoRenderWidth = 0;
         cv::Size reTgSize1st = cv::Size(reTgCols1st,reTgRows1st);
         resize(gVideoTgMat, gVideoTgMat, reTgSize1st);
     }
-    //判断是否为空，为空直接返回
-    if (gVideoTgMat.empty()) {
-        OOBLog(@"目标图像矩阵为空");
-        return nil;
-    }
     NSDictionary *compDict = [self compareBgMat:videoMat TargetMat:gVideoTgMat SimilarValue:similarValue];
     
     NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:compDict];

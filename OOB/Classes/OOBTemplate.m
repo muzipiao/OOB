@@ -277,6 +277,7 @@ static OOBTemplate *instance;
     // 配置AVAssetReader
     NSArray *trackArray = [asset tracksWithMediaType:AVMediaTypeVideo];
     if (trackArray.count == 0) {
+        self.videoResultBlock(CGRectZero, 0, nil);
         OOBLog(@"视频地址错误：%@", vURL);
         return;
     }
