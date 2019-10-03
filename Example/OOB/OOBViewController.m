@@ -33,6 +33,8 @@
 
 @implementation OOBViewController
 
+///MARK: - Life Circle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -40,49 +42,7 @@
     [self createUI];
 }
 
-// 摄像头目标识别
--(void)objCameraBtnClick:(UIButton *)sender{
-    OOBTemplateCameraVC *vc = [[OOBTemplateCameraVC alloc]init];
-    vc.targetImg = self.targetImage;
-    [self presentViewController:vc animated:YES completion:^{
-        NSLog(@"跳转摄像头识别界面");
-    }];
-}
-
-// 视频文件中目标识别
--(void)objVideoBtnClick:(UIButton *)sender{
-    OOBTemplateVideoVC *vc = [[OOBTemplateVideoVC alloc]init];
-    vc.targetImg = self.targetImage;
-    [self presentViewController:vc animated:YES completion:^{
-        NSLog(@"跳转视频文件识别界面");
-    }];
-}
-
-// 图片中目标识别
--(void)objImageBtnClick:(UIButton *)sender{
-    for (UIView *sub in self.view.subviews) {
-        if ([sub isKindOfClass:[UIButton class]] && sub.tag >= 1000) {
-            sub.backgroundColor = [UIColor whiteColor];
-        }
-    }
-    // 截取当前屏幕图片作为待识别的背景图
-    UIImage *bgImg = [self snapshotView:self.view];
-    OOBTemplateImageVC *imgVC = [[OOBTemplateImageVC alloc]init];
-    imgVC.targetImg = self.targetImage;
-    imgVC.bgImg = bgImg;
-    [self presentViewController:imgVC animated:YES completion:^{
-        NSLog(@"跳转图片识别界面");
-    }];
-}
-
-// 截图，截取屏幕
--(UIImage *)snapshotView:(UIView *)view{
-    UIGraphicsBeginImageContextWithOptions(view.bounds.size, YES, 0);
-    [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:YES];
-    UIImage *tempImg = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return tempImg;
-}
+///MARK: - UI
 
 -(void)createUI{
     self.navigationItem.title = @"iOS 图像识别";
@@ -146,6 +106,43 @@
     }
 }
 
+///MARK: - Btn Click
+
+// 摄像头目标识别
+-(void)objCameraBtnClick:(UIButton *)sender{
+    OOBTemplateCameraVC *vc = [[OOBTemplateCameraVC alloc]init];
+    vc.targetImg = self.targetImage;
+    [self presentViewController:vc animated:YES completion:^{
+        NSLog(@"跳转摄像头识别界面");
+    }];
+}
+
+// 视频文件中目标识别
+-(void)objVideoBtnClick:(UIButton *)sender{
+    OOBTemplateVideoVC *vc = [[OOBTemplateVideoVC alloc]init];
+    vc.targetImg = self.targetImage;
+    [self presentViewController:vc animated:YES completion:^{
+        NSLog(@"跳转视频文件识别界面");
+    }];
+}
+
+// 图片中目标识别
+-(void)objImageBtnClick:(UIButton *)sender{
+    for (UIView *sub in self.view.subviews) {
+        if ([sub isKindOfClass:[UIButton class]] && sub.tag >= 1000) {
+            sub.backgroundColor = [UIColor whiteColor];
+        }
+    }
+    // 截取当前屏幕图片作为待识别的背景图
+    UIImage *bgImg = [self snapshotView:self.view];
+    OOBTemplateImageVC *imgVC = [[OOBTemplateImageVC alloc]init];
+    imgVC.targetImg = self.targetImage;
+    imgVC.bgImg = bgImg;
+    [self presentViewController:imgVC animated:YES completion:^{
+        NSLog(@"跳转图片识别界面");
+    }];
+}
+
 // 点击切换图像
 -(void)targetBtnClick:(UIButton *)sender{
     for (UIView *sub in self.view.subviews) {
@@ -160,6 +157,17 @@
     NSString *imgName = self.imgNameArray[sender.tag - 1000];
     self.targetImage = [UIImage imageNamed:imgName];
 }
+
+// 截图，截取屏幕
+-(UIImage *)snapshotView:(UIView *)view{
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, YES, 0);
+    [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:YES];
+    UIImage *tempImg = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return tempImg;
+}
+
+///MARK: - Lazy Load
 
 -(UIButton *)objCameraBtn{
     if (_objCameraBtn == nil) {

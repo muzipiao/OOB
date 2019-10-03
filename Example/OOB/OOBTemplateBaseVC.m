@@ -14,9 +14,11 @@
 
 @implementation OOBTemplateBaseVC
 
+///MARK: - Life Circle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.modalPresentationStyle = UIModalPresentationFullScreen;
 }
 
 // 返回
@@ -25,6 +27,7 @@
 }
 
 ///MARK: - Lazy Load
+
 -(UIButton *)backBtn{
     if (!_backBtn) {
         UIButton *tempBtn = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -53,7 +56,7 @@
             markHeight = markWidth;
         }
         CGSize markSize = CGSizeMake(markWidth, markHeight);
-        UIImage *markImg = [OOBTemplate getRectWithSize:markSize Color:darkRed Width:5 Radius:5]; // 设置标记图像为矩形
+        UIImage *markImg = [OOBTemplate createRect:markSize borderColor:darkRed borderWidth:5 cornerRadius:5]; // 设置标记图像为矩形
         UIImageView *markerImgView = [[UIImageView alloc]initWithImage:markImg];
         [markerImgView sizeToFit];
         markerImgView.hidden = YES;

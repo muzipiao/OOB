@@ -53,16 +53,16 @@
 // 点击识别图像中的目标
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     // 传入背景预览图层，视频图像若100%不缩放展示(sizeToFit)，则不需要传入
-    OOBTemplate.bgPreview = self.bgView;
+    OOBTemplate.preview = self.bgView;
     /**
      * 开始识别图像中的目标
-     * targetRect 目标在背景图片中的位置，注意不是 UImageView 中的实际位置，需要缩放转换
-     * similarValue 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
+     * target 目标在背景图片中的位置，注意不是 UImageView 中的实际位置，需要缩放转换
+     * similar 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
      */
-    [OOBTemplate matchImage:self.targetImg BgImg:self.bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-        self.similarLabel.text = [NSString stringWithFormat:@"相似度：%.0f %%",similarValue * 100];
-        if (similarValue > 0.7) {
-            self.markView.frame = targetRect;
+    [OOBTemplate match:self.targetImg bgImg:self.bgImg result:^(CGRect rect, CGFloat similar) {
+        self.similarLabel.text = [NSString stringWithFormat:@"相似度：%.0f %%",similar * 100];
+        if (similar > 0.7) {
+            self.markView.frame = rect;
             self.markView.hidden = NO;
         }else{
             self.markView.hidden = YES;

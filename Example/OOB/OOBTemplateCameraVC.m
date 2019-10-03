@@ -26,7 +26,7 @@
     [super viewDidDisappear:animated];
     // 注意：视图销毁必须释放资源
     OOBLog(@"停止图像识别，必须 stopMatch 销毁 OOB");
-    [OOBTemplate stopMatch];
+    [OOBTemplate stop];
 }
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
@@ -48,25 +48,25 @@
  */
 -(void)startReco{
     // 设置视频预览图层
-    OOBTemplate.bgPreview = self.view;
+    OOBTemplate.preview = self.view;
     // 添加标记图像 ImageView 在预览图层中
     [self.view addSubview:self.markView];
     // 调整对比的相似度在 80% 以上
     OOBTemplate.similarValue = 0.8;
     /**
      * 开始图像识别
-     * targetImg: 待识别的目标图像
-     @param targetRect 目标图像在预览图层中的 frame
-     @param similarValue 目标模板与视频图像中图像的相似度
+     @param target: 待识别的目标图像
+     @param rect 目标图像在预览图层中的 frame
+     @param similar 目标模板与视频图像中图像的相似度
      @return 识别图像在block中回调
      */
-    [OOBTemplate matchCamera:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-        OOBLog(@"模板图像与视频目标的相似度：%.0f %%,Rect:%@",similarValue * 100,NSStringFromCGRect(targetRect));
-        self.similarLabel.text = [NSString stringWithFormat:@"与目标相似度：%.0f %%",similarValue * 100];
+    [OOBTemplate match:self.targetImg result:^(CGRect rect, CGFloat similar) {
+        OOBLog(@"模板图像与视频目标的相似度：%.0f %%,Rect:%@",similar * 100,NSStringFromCGRect(rect));
+        self.similarLabel.text = [NSString stringWithFormat:@"与目标相似度：%.0f %%",similar * 100];
         // 只有当相似度大于 70% 时才标记，否则不标记
-        if (similarValue > 0.8) {
+        if (similar > 0.8) {
             self.markView.hidden = NO;
-            self.markView.frame = targetRect;
+            self.markView.frame = rect;
         }else{
             self.markView.hidden = YES;
         }

@@ -29,7 +29,6 @@ open OOB.xcworkspace
 ## 环境需求
 
 * OpenCV2
-* Foundation.framework
 * UIKit.framework
 * AVFoundation.framework
 
@@ -75,14 +74,14 @@ OOBTemplate.preview = self.view;
 ```objc
 /**
  * 开始图像识别
- * targetImg: 待识别的目标图像
- @param targetRect 目标图像在预览图层中的 frame
- @param similarValue 目标模板与视频图像中图像的相似度
+ @param target: 待识别的目标图像
+ @param rect 目标图像在预览图层中的 frame
+ @param similar 目标模板与视频图像中图像的相似度
  @return 识别图像在block中回调
  */
-[OOBTemplate matchCamera:self.targetImg resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-    OOBLog(@"与背景中目标的相似度：%.0f %%",similarValue * 100);
-    OOBLog(@"摄像头视频流中目标 Rect：%@",NSStringFromCGRect(targetRect));
+[OOBTemplate match:self.targetImg result:^(CGRect rect, CGFloat similar) {
+    OOBLog(@"与背景中目标的相似度：%.0f %%",similar * 100);
+    OOBLog(@"摄像头视频流中目标 Rect：%@",NSStringFromCGRect(rect));
 }];
 ```
 
@@ -96,15 +95,15 @@ OOBTemplate.preview = self.view;
 // 待识别的视频文件 URL
 NSURL *vdUrl = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
 /**
- * 开始识别视频中的目标
- @param targetRect 目标在背景图片中的位置
- @param similarValue 对比获取的相似度
- @param frameImg 当前视频帧图像
- */
-[OOBTemplate matchVideo:self.targetImg VideoURL:vdUrl resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
-    OOBLog(@"与背景中目标的相似度：%.0f %%",similarValue * 100);
-    OOBLog(@"摄像头视频流中目标 Rect：%@",NSStringFromCGRect(targetRect));
-    OOBLog(@"当前视频帧图像：%@",frameImg);
+* 识别视频中的目标，并返回目标在图片中的位置，实际相似度
+@param target 待识别的目标图像
+@param url 视频文件 URL
+@param result 识别结果，分别是目标位置和实际的相似度，视频当前帧图像
+*/
+[OOBTemplate match:self.targetImg videoURL:vdUrl result:^(CGRect rect, CGFloat similar, UIImage * _Nullable frame) {
+    OOBLog(@"与背景中目标的相似度：%.0f %%",similar * 100);
+    OOBLog(@"摄像头视频流中目标 Rect：%@",NSStringFromCGRect(rect));
+    OOBLog(@"当前视频帧图像：%@",frame);
 }];
 ```
 
@@ -115,18 +114,18 @@ NSURL *vdUrl = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtens
 ```objc
 /**
  * 开始识别图像中的目标
- * targetRect 目标在背景图片中的位置，注意不是 UImageView 中的实际位置，需要缩放转换
- * similarValue 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
+ * target 目标在背景图片中的位置，注意不是 UImageView 中的实际位置，需要缩放转换
+ * similar 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
  */
-[OOBTemplate matchImage:self.targetImg BgImg:self.bgImg Similar:0.8 resultBlock:^(CGRect targetRect, CGFloat similarValue) {
-    OOBLog(@"与背景中目标的相似度：%.0f %%",similarValue * 100);
-    OOBLog(@"摄像头视频流中目标 Rect：%@",NSStringFromCGRect(targetRect));
+[OOBTemplate match:self.targetImg bgImg:self.bgImg result:^(CGRect rect, CGFloat similar) {
+    OOBLog(@"与背景中目标的相似度：%.0f %%",similar * 100);
+    OOBLog(@"摄像头视频流中目标 Rect：%@",NSStringFromCGRect(rect));
 }];
 ```
 
 ### 结束图像识别
 
-若识别摄像头视频流，或视频文件流，必须**手动结束**匹配，调用 `[OOBTemplate stopMatch];` 释放资源。
+若识别摄像头视频流，或视频文件流，必须**手动结束**匹配，调用 `[OOBTemplate stop];` 释放资源。
 
 ### 其他设置
 
@@ -156,7 +155,7 @@ OOBTemplate.sessionPreset = AVCaptureSessionPreset640x480;
 
 ```objc
 // 生成一张和目标图片一样大小的矩形框图片，标记目标位置。颜色红色，线宽为 3，切圆角 5
-UIImage *markImage = [OOBTemplate getRectWithSize:_targetImg.size Color:[UIColor redColor] Width:3 Radius:5]; // 设置标记图像为矩形
+UIImage *markImage = [OOBTemplate createRect:_targetImg.size borderColor:[UIColor redColor] borderWidth:3 cornerRadius:5]; // 设置标记图像为矩形
 ```
 
 ## 其他

@@ -1,5 +1,5 @@
 PODS:
-  - OOB (1.0.0):
+  - OOB (1.1.0):
     - OpenCV2 (~> 4.1.0)
   - OpenCV2 (4.1.0)
 
@@ -8,7 +8,7 @@ DEPENDENCIES:
   - OpenCV2 (~> 4.1.0)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - OpenCV2
 
 EXTERNAL SOURCES:
@@ -16,9 +16,9 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  OOB: 01143da884b2761165ebe22921d937a46f6fcb96
+  OOB: 8e54986c013e88db00f435a3a0b45e8a833da01b
   OpenCV2: 13c3defa743793c87a4a2541b325509e878e5534
 
 PODFILE CHECKSUM: 31a098ff0e3346ad571514b8dbf4017696015ae8
 
-COCOAPODS: 1.7.2
+COCOAPODS: 1.8.1

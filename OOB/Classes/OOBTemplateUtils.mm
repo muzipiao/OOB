@@ -1,5 +1,5 @@
 //
-//  OOBTemplateHelper.m
+//  OOBTemplateUtils.m
 //  OpenCVDemo
 //
 //  Created by lifei on 2019/3/4.
@@ -14,23 +14,26 @@
 #import <opencv2/imgcodecs/ios.h>
 #endif
 #pragma clang pop
-#import "OOBTemplateHelper.h"
+#import "OOBTemplateUtils.h"
+
+NSString * const kOOBTemplateSimilarValue = @"oob.template.similar.value";
+NSString * const kOOBTemplateTargetRect = @"oob.template.target.rect";
+NSString * const kOOBTemplateVideoSize = @"oob.template.video.size";
+NSString * const kOOBTemplatePaddingWidth = @"oob.template.padding.width";
 
 using namespace cv;
 
-@implementation OOBTemplateHelper
+@implementation OOBTemplateUtils
 
-/**
- * 识别视频中的目标，并返回目标在图片中的位置，实际相似度
- @param sampleBuffer 视频图像流
- @param tImg 待识别的目标图像
- @param similarValue 与视频图像对比的相似度
- @return 结果字典，包含目标坐标，相似度，视频的原始尺寸
- */
 // 视频识别全局变量
 static UIImage *gVideoTgImg = nil;
 static Mat gVideoTgMat;
 static CGFloat videoRenderWidth = 0;
+
+/// 识别视频中的目标，返回目标坐标，相似度，视频的原始尺寸
+/// @param sampleBuffer 视频图像流
+/// @param tImg 待识别的目标图像
+/// @param similarValue 与视频图像对比的相似度
 + (nullable NSDictionary *)locInVideo:(CMSampleBufferRef)sampleBuffer TemplateImg:(UIImage *)tImg SimilarValue:(CGFloat)similarValue{
     // 视频图像矩阵
     Mat videoMat;
@@ -58,19 +61,15 @@ static CGFloat videoRenderWidth = 0;
     NSDictionary *compDict = [self compareBgMat:videoMat TargetMat:gVideoTgMat SimilarValue:similarValue];
     
     NSMutableDictionary *resultDict = [NSMutableDictionary dictionaryWithDictionary:compDict];
-    [resultDict setObject:NSStringFromCGSize(originVideoSize) forKey:kVideoSize];
-    [resultDict setObject:@(videoFillWidth) forKey:kVideoFillWidth];
+    [resultDict setObject:NSStringFromCGSize(originVideoSize) forKey:kOOBTemplateVideoSize];
+    [resultDict setObject:@(videoFillWidth) forKey:kOOBTemplatePaddingWidth];
     return resultDict.copy;
 }
 
-///MARK: - 对比图片
-/**
- * 识别图像中的目标，并返回目标坐标，相似度
- @param bgImg 背景图像，在背景图像上搜索目标是否存在
- @param tImg 待识别的目标图像
- @param similarValue 要求的相似度，取值在 0 到 1 之间，1 为最大，越接近 1 表示要求越高
- @return 结果字典，分别是目标位置和实际的相似度
- */
+/// 识别图像中的目标，返回目标位置和实际的相似度
+/// @param bgImg 背景图像，在背景图像上搜索目标是否存在
+/// @param tImg 待识别的目标图像
+/// @param similarValue 要求的相似度，取值在 0 到 1 之间，1 为最大，越接近 1 表示要求越高
 + (NSDictionary *)locInImg:(UIImage *)bgImg TargetImg:(UIImage *)tImg SimilarValue:(CGFloat)similarValue{
     if (!bgImg || !tImg) {
         return nil;
@@ -93,14 +92,13 @@ static CGFloat videoRenderWidth = 0;
     return compDict;
 }
 
-/**
- * 对比两个图像矩阵是否有相似区域
- @param bgMat 背景图像，在背景图像上搜索目标是否存在
- @param tgMat 待识别的目标图像矩阵
- @param similarValue 要求的相似度
- @return 结果字典，包含目标坐标，相似度
- */
-static CGFloat scaleMid = 0.5; // 缩放，将目标图像从 0.5 倍背景图像尺寸，向两边缩放，先减后加。
+/// 缩放，将目标图像从 0.5 倍背景图像尺寸，向两边缩放，先减后加。
+static CGFloat scaleMid = 0.5;
+
+/// 对比两个图像矩阵是否有相似区域，返回目标坐标，相似度
+/// @param bgMat 背景图像，在背景图像上搜索目标是否存在
+/// @param tgMat 待识别的目标图像矩阵
+/// @param similarValue 要求的相似度
 + (nullable NSDictionary *)compareBgMat:(Mat)bgMat TargetMat:(Mat)tgMat SimilarValue:(CGFloat)similarValue{
     // 将背景大图像缩放为小图
     int reBgCols = 160; // 宽度固定为160像素
@@ -169,17 +167,13 @@ static CGFloat scaleMid = 0.5; // 缩放，将目标图像从 0.5 倍背景图�
     } while (TRUE);
     // 将作为恢复为背景大图的坐标
     CGRect rectF = CGRectMake(maxLoc.x * reBgScale, maxLoc.y * reBgScale, currentTgWidth * reBgScale, currentTgHeight * reBgScale);
-    NSDictionary *tempDict = @{kTargetRect:NSStringFromCGRect(rectF),
-                               kSimilarValue:@(maxVal)};
+    NSDictionary *tempDict = @{kOOBTemplateTargetRect:NSStringFromCGRect(rectF),
+                               kOOBTemplateSimilarValue:@(maxVal)};
     return tempDict;
 }
 
-/**
- * 高效将视频流转换为 Mat 图像矩阵
- * Efficiently convert video streams to Mat image matrices
- @param sampleBuffer 视频流(video stream)
- @return OpenCV 可用的图像矩阵(OpenCV available image matrix)
- */
+/// 高效将视频流转换为 Mat 图像矩阵
+/// @param sampleBuffer 视频流(video stream)
 + (Mat)bufferToGrayMat:(CMSampleBufferRef) sampleBuffer{
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
@@ -201,11 +195,8 @@ static CGFloat scaleMid = 0.5; // 缩放，将目标图像从 0.5 倍背景图�
     return mat;
 }
 
-/**
- * 将 YUV 格式视频流转为 CGImage
- @param sampleBuffer YUV 格式视频流
- @return 当前视频流的 CGImage
- */
+/// 将 YUV 格式视频流转为 CGImage，返回当前视频流的 CGImage
+/// @param sampleBuffer YUV 格式视频流
 + (nullable UIImage *)imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer{
     if (!sampleBuffer) {
         return nil;
@@ -264,11 +255,8 @@ static CGFloat scaleMid = 0.5; // 缩放，将目标图像从 0.5 倍背景图�
     return quartzImg;
 }
 
-/**
- * 将透明像素填充为白色，对其他像素无影响
- @param originImg 原图像
- @return 填充后的图像
- */
+/// 将透明像素填充为白色，对其他像素无影响，返回填充后的图像
+/// @param originImg 原始图像
 + (nullable UIImage *)removeAlpha:(UIImage *)originImg{
     CGSize tSize = originImg.size;
     CGRect tRect = CGRectMake(0, 0, tSize.width, tSize.height);

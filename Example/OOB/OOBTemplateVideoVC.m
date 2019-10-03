@@ -28,7 +28,7 @@
     [super viewDidDisappear:animated];
     // 注意：视图销毁必须释放资源
     OOBLog(@"停止图像识别，必须 stopMatch 销毁 OOB");
-    [OOBTemplate stopMatch];
+    [OOBTemplate stop];
 }
 
 /**
@@ -59,7 +59,7 @@
 
 // 返回主页
 -(void)backBtnClick:(UIButton *)sender{
-    [OOBTemplate stopMatch];
+    [OOBTemplate stop];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -70,24 +70,24 @@
     // similarValue 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
     OOBTemplate.similarValue = 0.8;
     // 传入视频预览图层，视频图像若100%不缩放展示(sizeToFit)，则不需要传入
-    OOBTemplate.bgPreview = self.bgView;
+    OOBTemplate.preview = self.bgView;
     
     /**
-     * 开始识别视频中的目标
-     @param targetRect 目标在背景图片中的位置
-     @param similarValue 对比获取的相似度
-     @param frameImg 当前视频帧图像
-     */
-    [OOBTemplate matchVideo:self.targetImg VideoURL:vdUrl resultBlock:^(CGRect targetRect, CGFloat similarValue, UIImage * _Nullable frameImg) {
-        self.similarLabel.text = [NSString stringWithFormat:@"相似度：%.0f %%",similarValue * 100];
-        if (similarValue > 0.8) {
-            self.markView.frame = targetRect;
+    * 识别视频中的目标，并返回目标在图片中的位置，实际相似度
+    @param target 待识别的目标图像
+    @param url 视频文件 URL
+    @param result 识别结果，分别是目标位置和实际的相似度，视频当前帧图像
+    */
+    [OOBTemplate match:self.targetImg videoURL:vdUrl result:^(CGRect rect, CGFloat similar, UIImage * _Nullable frame) {
+        self.similarLabel.text = [NSString stringWithFormat:@"相似度：%.0f %%",similar * 100];
+        if (similar > 0.8) {
+            self.markView.frame = rect;
             self.markView.hidden = NO;
         }else{
             self.markView.hidden = YES;
         }
         // 视频预览
-        self.bgView.image = frameImg;
+        self.bgView.image = frame;
     }];
 }
 
