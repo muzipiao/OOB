@@ -12,6 +12,14 @@
 #define kSW [UIScreen mainScreen].bounds.size.width
 #define kSH [UIScreen mainScreen].bounds.size.height
 
+// iPhoneX系列
+#define  HS_iPhoneX     (kSW == 375.f && kSH == 812.f ? YES : NO)
+#define  HS_iPhoneXs    (kSW == 375.f && kSH == 812.f ? YES : NO)
+#define  HS_iPhoneXsMax (kSW == 414.f && kSH == 896.f ? YES : NO)
+#define  HS_iPhoneXR    (kSW == 414.f && kSH == 896.f ? YES : NO)
+// 判断iPhoneX系列
+#define  HS_XSeries (HS_iPhoneX || HS_iPhoneXs || HS_iPhoneXsMax || HS_iPhoneXR)
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OOBTemplateBaseVC : UIViewController

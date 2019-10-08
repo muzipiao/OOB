@@ -20,9 +20,7 @@
     [self createUI];
 }
 
-/**
- 创建一个标记框标记目标
- */
+/// UI
 -(void)createUI{
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -45,8 +43,11 @@
     
     CGFloat labelHeight = self.similarLabel.bounds.size.height;
     self.similarLabel.frame = CGRectMake(0, margin * 3, kSW, labelHeight + 5);
-    
-    self.backBtn.frame = CGRectMake(15, margin * 2, 50, 30);
+    CGFloat topMargin = 44;
+    if (HS_XSeries) {
+        topMargin = 64;
+    }
+    self.backBtn.frame = CGRectMake(15, topMargin, 50, 30);
     [self.backBtn sizeToFit];
 }
 
@@ -54,6 +55,8 @@
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     // 传入背景预览图层，视频图像若100%不缩放展示(sizeToFit)，则不需要传入
     OOBTemplate.preview = self.bgView;
+    // 值设置的越小误报率高，值设置的越大计算量越大
+    OOBTemplate.similarValue = 0.9;
     /**
      * 开始识别图像中的目标
      * target 目标在背景图片中的位置，注意不是 UImageView 中的实际位置，需要缩放转换

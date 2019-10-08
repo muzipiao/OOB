@@ -40,7 +40,11 @@
     [self.view addSubview:self.similarLabel];
     CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
     CGFloat labelHeight = self.similarLabel.bounds.size.height;
-    self.similarLabel.frame = CGRectMake(0, 20, screenWidth, labelHeight);
+    CGFloat topMargin = 20;
+    if (HS_XSeries) {
+        topMargin = 40;
+    }
+    self.similarLabel.frame = CGRectMake(0, topMargin, screenWidth, labelHeight);
 }
 
 /**
@@ -52,7 +56,7 @@
     // 添加标记图像 ImageView 在预览图层中
     [self.view addSubview:self.markView];
     // 调整对比的相似度在 80% 以上
-    OOBTemplate.similarValue = 0.8;
+    OOBTemplate.similarValue = 0.9;
     /**
      * 开始图像识别
      @param target: 待识别的目标图像

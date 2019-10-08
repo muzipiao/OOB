@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, strong) UIImage *targetImg;
 
 /// 待识别物体与视频对比的相似度。值越大代表相似度越高。
-/// 默认值为 0.7，最大为 1.0。值设置的越小误报率高，值设置的越大越难匹配。
+/// 默认值为 0.7，最大为 1.0。值设置的越小误报率高，值设置的越大计算量越大。
 @property (class, nonatomic, assign) CGFloat similarValue;
 
 ///--------------------

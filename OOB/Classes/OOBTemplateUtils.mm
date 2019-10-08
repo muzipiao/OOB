@@ -115,9 +115,11 @@ static CGFloat scaleMid = 0.5;
     // 缩放的尺度，要求精度越高，则每次缩放越小
     CGFloat subValue = (1.1 - similarValue) * 0.1;
     CGFloat scaleSign = -1; // 放大缩小标记
+    CGFloat beginScale = scaleMid; // 记录缩放的起始比例
     scaleMid += subValue; // 从上次匹配的值开始
     if (scaleMid >= 1 || scaleMid <= 0.1) {
-        scaleMid = 0.5; // 超限重置
+        beginScale = 0.5;
+        scaleMid = 0.5 + subValue; // 超限重置
     }
     do {
         if (scaleMid >= 1) {
@@ -125,7 +127,7 @@ static CGFloat scaleMid = 0.5;
         }
         // 向下遍历不到，则向上遍历，放大
         if (scaleMid <= 0.1) {
-            scaleMid = 0.5;
+            scaleMid = beginScale;
             scaleSign = 1;
         }
         scaleMid += (subValue * scaleSign);

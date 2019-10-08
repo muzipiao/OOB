@@ -54,7 +54,11 @@
     // 范围按钮
     [self.view addSubview:self.backBtn];
     CGSize btnSize = self.backBtn.bounds.size;
-    self.backBtn.frame = CGRectMake(15, 25, btnSize.width, btnSize.height);
+    CGFloat topMargin = 44;
+    if (HS_XSeries) {
+        topMargin = 64;
+    }
+    self.backBtn.frame = CGRectMake(15, topMargin, btnSize.width, btnSize.height);
 }
 
 // 返回主页
@@ -68,7 +72,7 @@
     // 待识别的视频
     NSURL *vdUrl = [[NSBundle mainBundle] URLForResource:@"oob_apple.m4v" withExtension:nil];
     // similarValue 要求的相似度，最大值为1，要求越大，精度越高，计算量越大
-    OOBTemplate.similarValue = 0.8;
+    OOBTemplate.similarValue = 0.9;
     // 传入视频预览图层，视频图像若100%不缩放展示(sizeToFit)，则不需要传入
     OOBTemplate.preview = self.bgView;
     
