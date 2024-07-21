@@ -46,7 +46,7 @@ pod 'OOB'
 
 ### 直接集成
 
-1. 直接集成 `OOB` 前，请先集成 `OpenCV`，参考我的一篇博客：[iOS集成OpenCV博客](http://cocoafei.top/2017/07/iOS-%E9%9B%86%E6%88%90-OpenCV/)
+1. 直接集成 `OOB` 前，请先集成 `OpenCV`，参考我的一篇博客：[iOS集成OpenCV博客](https://muzipiao.github.io/2017/07/iOS-%E9%9B%86%E6%88%90-OpenCV/)
 2. 从 Git 下载最新代码，找到和 README 同级的 OOB 文件夹，将 OOB 文件夹拖入项目即可。
 3. 在需要使用的地方导入 `#import "OOB.h"` 即可。
 

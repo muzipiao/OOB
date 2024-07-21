@@ -73,3 +73,5 @@ iOSInjectionProject/
 # custom ignore
 Pods/
 Podfile.lock
+Example/Pods/
+Example/Podfile.lock
